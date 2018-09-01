@@ -8,13 +8,20 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.awt.event.ActionEvent;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.awt.Canvas;
 import java.awt.Color;
@@ -22,6 +29,9 @@ import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import java.awt.Font;
 import java.awt.Insets;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JTextPane;
 
 public class STR_Calculator extends JFrame {
 
@@ -33,6 +43,7 @@ public class STR_Calculator extends JFrame {
 	private JTextField lengthAnswerTextField;
 	private JTextField speedTextField;
 
+	//Behöver något att commita, kan raderas
 	
 	double tStill;
 	double t;
@@ -64,6 +75,8 @@ public class STR_Calculator extends JFrame {
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 691, 516);
+		
+		
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -111,11 +124,39 @@ public class STR_Calculator extends JFrame {
 		contentPane.add(calcPanel, "calc");
 		calcPanel.setLayout(null);
 		
+		JLabel timeInvalidLabel = new JLabel(Language.getString("STR_Calculator.timeInvalidLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		timeInvalidLabel.setForeground(Color.RED);
+		timeInvalidLabel.setBounds(0, 72, 130, 14);
+		calcPanel.add(timeInvalidLabel);
+		
+		JLabel lengthInvalidLabel = new JLabel(Language.getString("STR_Calculator.lengthInvalidLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		lengthInvalidLabel.setForeground(Color.RED);
+		lengthInvalidLabel.setBounds(165, 72, 130, 14);
+		calcPanel.add(lengthInvalidLabel);
+		
 		earthTimeTextField = new JTextField();
+		earthTimeTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+			double d = Double.parseDouble(earthTimeTextField.getText());
+			timeInvalidLabel.setText("");
+		} catch (NumberFormatException e1) {
+			timeInvalidLabel.setText("Endast siffror och punkt");
+		}
+			}
+		});
+		
+		JLabel speedInvalidLabel = new JLabel("");
+		speedInvalidLabel.setForeground(Color.RED);
+		speedInvalidLabel.setBounds(83, 184, 130, 14);
+		calcPanel.add(speedInvalidLabel);
+		
 		earthTimeTextField.setToolTipText(Language.getString("STR_Calculator.earthTimeTextField.toolTipText", "T.ex 5 år")); //$NON-NLS-1$ //$NON-NLS-2$
 		earthTimeTextField.setColumns(10);
-		earthTimeTextField.setBounds(0, 53, 130, 31);
+		earthTimeTextField.setBounds(0, 42, 130, 31);
 		calcPanel.add(earthTimeTextField);
+		
 		
 		JButton answerButton = new JButton(Language.getString("STR_Calculator.answerButton.text", "Räkna ut")); //$NON-NLS-1$ //$NON-NLS-2$
 		answerButton.addActionListener(new ActionListener() {
@@ -189,9 +230,21 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(canvas);
 		
 		lengthTextField = new JTextField();
+		lengthTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+			double d = Double.parseDouble(lengthTextField.getText());
+			lengthInvalidLabel.setText("");
+		} catch (NumberFormatException e1) {
+			lengthInvalidLabel.setText("Endast siffror och punkt");
+			
+		}
+			}
+		});
 		lengthTextField.setToolTipText(Language.getString("STR_Calculator.lengthTextField.toolTipText", "T.ex 30 m")); //$NON-NLS-1$ //$NON-NLS-2$
 		lengthTextField.setColumns(10);
-		lengthTextField.setBounds(165, 53, 130, 31);
+		lengthTextField.setBounds(165, 42, 130, 31);
 		calcPanel.add(lengthTextField);
 		
 		timeAnswerTextField = new JTextField();
@@ -221,14 +274,14 @@ public class STR_Calculator extends JFrame {
 		textArea.setText(Language.getString("STR_Calculator.textArea.text", "Tid som har\r\ngått på jorden")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea.setOpaque(false);
 		textArea.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
-		textArea.setBounds(0, 11, 130, 40);
+		textArea.setBounds(0, 0, 130, 40);
 		calcPanel.add(textArea);
 		
 		JTextArea textArea_1 = new JTextArea();
 		textArea_1.setText(Language.getString("STR_Calculator.textArea_1.text", "Objektets längd")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea_1.setOpaque(false);
 		textArea_1.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
-		textArea_1.setBounds(165, 26, 130, 26);
+		textArea_1.setBounds(165, 15, 130, 26);
 		calcPanel.add(textArea_1);
 		
 		JTextArea textArea_2 = new JTextArea();
@@ -242,6 +295,16 @@ public class STR_Calculator extends JFrame {
 		speedTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent ke) {
+				
+				try {
+					double d = Double.parseDouble(speedTextField.getText());
+					speedInvalidLabel.setText("");
+				} catch (NumberFormatException e1) {
+					speedInvalidLabel.setText("Endast siffror och punkt");
+					
+				}
+			
+				
 				String typed = speedTextField.getText();
 				speedSlider.setValue(0);
 				if (!typed.matches("\\d+") || typed.length() > 3) {
@@ -317,8 +380,30 @@ public class STR_Calculator extends JFrame {
 		button_p1.setBounds(170, 156, 25, 25);
 		calcPanel.add(button_p1);
 		
+		
+		
+		NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+		DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
+		decimalFormat.setGroupingUsed(false);
+		
 		JPanel infoPanel = new JPanel();
 		contentPane.add(infoPanel, "info");
+		infoPanel.setLayout(null);
+		
+		JTextArea txtrLoremIpsumDolor_1 = new JTextArea();
+		txtrLoremIpsumDolor_1.setFont(new Font("Calibri", Font.PLAIN, 14));
+		txtrLoremIpsumDolor_1.setWrapStyleWord(true);
+		txtrLoremIpsumDolor_1.setLineWrap(true);
+		txtrLoremIpsumDolor_1.setText(Language.getString("STR_Calculator.txtrLoremIpsumDolor_1.text", (String) null)); //$NON-NLS-1$
+		txtrLoremIpsumDolor_1.setBounds(10, 54, 335, 360);
+		infoPanel.add(txtrLoremIpsumDolor_1);
+		
+		JTextArea txtrLngdkontraktionFungerarS = new JTextArea();
+		txtrLngdkontraktionFungerarS.setFont(new Font("Calibri", Font.PLAIN, 14));
+		txtrLngdkontraktionFungerarS.setWrapStyleWord(true);
+		txtrLngdkontraktionFungerarS.setLineWrap(true);
+		txtrLngdkontraktionFungerarS.setText(Language.getString("STR_Calculator.txtrLngdkontraktionFungerarS.text", "Längdkontraktion fungerar så här blblblblb Lorem ipsum dolor set ametLorem ipsum dolor set ametLorem ipsum dolor set amet")); //$NON-NLS-1$ //$NON-NLS-2$
+		txtrLngdkontraktionFungerarS.setBounds(361, 52, 266, 362);
+		infoPanel.add(txtrLngdkontraktionFungerarS);
 	}
-
 }
