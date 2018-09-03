@@ -8,6 +8,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.ImageIcon;
 import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -28,10 +29,12 @@ import java.awt.Color;
 import javax.swing.JSlider;
 import javax.swing.JTextArea;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Insets;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
+import java.awt.Toolkit;
 
 public class STR_Calculator extends JFrame {
 
@@ -72,6 +75,7 @@ public class STR_Calculator extends JFrame {
 	 * Create the frame.
 	 */
 	public STR_Calculator() {
+		setIconImage(new ImageIcon(this.getClass().getResource("/icon_Newton.jpg")).getImage());
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 691, 516);
