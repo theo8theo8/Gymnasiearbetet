@@ -32,6 +32,9 @@ import java.awt.Insets;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
+import java.awt.Toolkit;
+import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
 
 public class STR_Calculator extends JFrame {
 
@@ -72,6 +75,7 @@ public class STR_Calculator extends JFrame {
 	 * Create the frame.
 	 */
 	public STR_Calculator() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\MeiThe\\Documents\\3. Trean\\Gymnasiearbete\\icon_Newton.jpg"));
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 691, 516);
@@ -107,6 +111,15 @@ public class STR_Calculator extends JFrame {
 			}
 		});
 		menuBar.add(infoButton);
+		
+		JButton logButton = new JButton(Language.getString("STR_Calculator.btnLogg.text", "Logg")); //$NON-NLS-1$ //$NON-NLS-2$
+		logButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CardLayout c =(CardLayout)(contentPane.getLayout());
+				c.show(contentPane, "logScroll");
+			}
+		});
+		menuBar.add(logButton);
 		
 		
 		contentPane = new JPanel();
@@ -262,6 +275,13 @@ public class STR_Calculator extends JFrame {
 		JSlider speedSlider = new JSlider(0, 299793, 150000);
 		speedSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
+				try {
+					double d = Double.parseDouble(speedTextField.getText());
+					speedInvalidLabel.setText("");
+				} catch (NumberFormatException e1) {
+					speedInvalidLabel.setText("Endast siffror och punkt");
+					
+				}
 				speedTextField.setText(String.valueOf(speedSlider.getValue()));
 			}
 		});
@@ -271,6 +291,7 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(speedSlider);
 		
 		JTextArea textArea = new JTextArea();
+		textArea.setEditable(false);
 		textArea.setText(Language.getString("STR_Calculator.textArea.text", "Tid som har\r\ngått på jorden")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea.setOpaque(false);
 		textArea.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
@@ -278,6 +299,7 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(textArea);
 		
 		JTextArea textArea_1 = new JTextArea();
+		textArea_1.setEditable(false);
 		textArea_1.setText(Language.getString("STR_Calculator.textArea_1.text", "Objektets längd")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea_1.setOpaque(false);
 		textArea_1.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
@@ -301,16 +323,9 @@ public class STR_Calculator extends JFrame {
 					speedInvalidLabel.setText("");
 				} catch (NumberFormatException e1) {
 					speedInvalidLabel.setText("Endast siffror och punkt");
-					
 				}
 			
-				
-				String typed = speedTextField.getText();
-				speedSlider.setValue(0);
-				if (!typed.matches("\\d+") || typed.length() > 3) {
-					return;
-				}
-				double value = Double.parseDouble(typed);
+				double value = Double.parseDouble(speedTextField.getText());
 				speedSlider.setValue((int) value);
 			}
 		});
@@ -405,5 +420,16 @@ public class STR_Calculator extends JFrame {
 		txtrLngdkontraktionFungerarS.setText(Language.getString("STR_Calculator.txtrLngdkontraktionFungerarS.text", "Längdkontraktion fungerar så här blblblblb Lorem ipsum dolor set ametLorem ipsum dolor set ametLorem ipsum dolor set amet")); //$NON-NLS-1$ //$NON-NLS-2$
 		txtrLngdkontraktionFungerarS.setBounds(361, 52, 266, 362);
 		infoPanel.add(txtrLngdkontraktionFungerarS);
+		
+		JScrollPane logScrollPane = new JScrollPane();
+		contentPane.add(logScrollPane, "logScroll");
+		
+		JPanel logPanel = new JPanel();
+		logScrollPane.setViewportView(logPanel);
+		logPanel.setLayout(null);
+		
+		JButton btnNewButton_1 = new JButton(Language.getString("STR_Calculator.btnNewButton_1.text", "New button")); //$NON-NLS-1$ //$NON-NLS-2$
+		btnNewButton_1.setBounds(292, 5, 89, 23);
+		logPanel.add(btnNewButton_1);
 	}
 }
