@@ -35,6 +35,8 @@ import javax.swing.JTextPane;
 import java.awt.Toolkit;
 import javax.swing.JScrollPane;
 import javax.swing.JScrollBar;
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
 
 public class STR_Calculator extends JFrame {
 
@@ -428,8 +430,24 @@ public class STR_Calculator extends JFrame {
 		logScrollPane.setViewportView(logPanel);
 		logPanel.setLayout(null);
 		
-		JButton btnNewButton_1 = new JButton(Language.getString("STR_Calculator.btnNewButton_1.text", "New button")); //$NON-NLS-1$ //$NON-NLS-2$
-		btnNewButton_1.setBounds(292, 5, 89, 23);
-		logPanel.add(btnNewButton_1);
+		JTextPane textPane_1 = new JTextPane();
+		textPane_1.setBounds(0, 25, 126, 425);
+		logPanel.add(textPane_1);
+		
+		JTextPane textPane_5 = new JTextPane();
+		textPane_5.setBounds(136, 25, 126, 425);
+		logPanel.add(textPane_5);
+		
+		JTextPane textPane = new JTextPane();
+		textPane.setBounds(272, 25, 126, 425);
+		logPanel.add(textPane);
+		
+		JTextPane textPane_2 = new JTextPane();
+		textPane_2.setBounds(408, 25, 126, 425);
+		logPanel.add(textPane_2);
+		
+		JTextPane textPane_3 = new JTextPane();
+		textPane_3.setBounds(544, 25, 126, 425);
+		logPanel.add(textPane_3);
 	}
 }
