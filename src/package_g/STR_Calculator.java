@@ -32,7 +32,7 @@ import java.text.NumberFormat;
 
 import java.util.Locale;
 
-
+//Test kommentar
 public class STR_Calculator extends JFrame {
 
 	private static final long serialVersionUID = 1L;
