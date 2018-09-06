@@ -32,13 +32,18 @@ import java.text.NumberFormat;
 
 import java.util.Locale;
 
-//Test kommentar ++
+/*
+ * STR_Calculator:
+ * 
+ * 
+ * 
+ */
 public class STR_Calculator extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField earthTimeTextField;
-	private JTextField lengthTextField;
+	private JTextField stillTimeTextField;
+	private JTextField stillLengthTextField;
 	private JTextField timeAnswerTextField;
 	private JTextField lengthAnswerTextField;
 	private JTextField speedTextField;
@@ -51,7 +56,7 @@ public class STR_Calculator extends JFrame {
 	double l;
 	double gamma;
 	double v;
-	double c = 299792.458;
+	double c = 299792.458; //TODO Sätta rikitgt C
 	
 	
 	public static void main(String[] args) {
@@ -83,6 +88,7 @@ public class STR_Calculator extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
+		// Menu knapp
 		JButton menuButton = new JButton(Language.getString("STR_Calculator.menuButton.text", "Menu")); //$NON-NLS-1$ //$NON-NLS-2$
 		menuButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -92,6 +98,7 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(menuButton);
 		
+		// Kalkylator knapp
 		JButton calcButton = new JButton(Language.getString("STR_Calculator.calcButton.text", "Calculator")); //$NON-NLS-1$ //$NON-NLS-2$
 		calcButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -101,6 +108,7 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(calcButton);
 		
+		// Info knapp
 		JButton infoButton = new JButton(Language.getString("STR_Calculator.infoButton.text", "Info")); //$NON-NLS-1$ //$NON-NLS-2$
 		infoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -110,6 +118,7 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(infoButton);
 		
+		// Logg knapp
 		JButton logButton = new JButton(Language.getString("STR_Calculator.btnLogg.text", "Logg")); //$NON-NLS-1$ //$NON-NLS-2$
 		logButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -128,6 +137,10 @@ public class STR_Calculator extends JFrame {
 		JPanel menuPanel = new JPanel();
 		contentPane.add(menuPanel, "menu");
 		
+		/*
+		 * 
+		 * Ska bort
+		 */
 		JButton btnNewButton = new JButton(Language.getString("STR_Calculator.btnNewButton.text", "New button")); //$NON-NLS-1$ //$NON-NLS-2$
 		menuPanel.add(btnNewButton);
 		
@@ -135,6 +148,13 @@ public class STR_Calculator extends JFrame {
 		contentPane.add(calcPanel, "calc");
 		calcPanel.setLayout(null);
 		
+		/*
+		 * Textrutor
+		 * Ger meddelande om det är text i rutorna
+		 *
+		 *Längd och tid
+		 * 
+		 */
 		JLabel timeInvalidLabel = new JLabel(Language.getString("STR_Calculator.timeInvalidLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
 		timeInvalidLabel.setForeground(Color.RED);
 		timeInvalidLabel.setBounds(0, 72, 130, 14);
@@ -142,15 +162,20 @@ public class STR_Calculator extends JFrame {
 		
 		JLabel lengthInvalidLabel = new JLabel(Language.getString("STR_Calculator.lengthInvalidLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
 		lengthInvalidLabel.setForeground(Color.RED);
-		lengthInvalidLabel.setBounds(165, 72, 130, 14);
+		lengthInvalidLabel.setBounds(180, 72, 130, 14);
 		calcPanel.add(lengthInvalidLabel);
 		
-		earthTimeTextField = new JTextField();
-		earthTimeTextField.addKeyListener(new KeyAdapter() {
+		JLabel speedInvalidLabel = new JLabel(Language.getString("STR_Calculator.speedInvalidLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		speedInvalidLabel.setForeground(Color.RED);
+		speedInvalidLabel.setBounds(100, 183, 130, 14);
+		calcPanel.add(speedInvalidLabel);
+		
+		stillTimeTextField = new JTextField();
+		stillTimeTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
-			Double.parseDouble(earthTimeTextField.getText());
+			Double.parseDouble(stillTimeTextField.getText());
 			timeInvalidLabel.setText("");
 		} catch (NumberFormatException e1) {
 			timeInvalidLabel.setText("Endast siffror och punkt");
@@ -158,15 +183,12 @@ public class STR_Calculator extends JFrame {
 			}
 		});
 		
-		JLabel speedInvalidLabel = new JLabel("");
-		speedInvalidLabel.setForeground(Color.RED);
-		speedInvalidLabel.setBounds(83, 184, 130, 14);
-		calcPanel.add(speedInvalidLabel);
 		
-		earthTimeTextField.setToolTipText(Language.getString("STR_Calculator.earthTimeTextField.toolTipText", "T.ex 5 Ã¥r")); //$NON-NLS-1$ //$NON-NLS-2$
-		earthTimeTextField.setColumns(10);
-		earthTimeTextField.setBounds(0, 42, 150, 31);
-		calcPanel.add(earthTimeTextField);
+		
+		stillTimeTextField.setToolTipText(Language.getString("STR_Calculator.stillTimeTextField.toolTipText", "T.ex 5 Ã¥r")); //$NON-NLS-1$ //$NON-NLS-2$
+		stillTimeTextField.setColumns(10);
+		stillTimeTextField.setBounds(0, 42, 150, 31);
+		calcPanel.add(stillTimeTextField);
 		
 		JScrollPane logScrollPane = new JScrollPane();
 		contentPane.add(logScrollPane, "logScroll");
@@ -199,7 +221,6 @@ public class STR_Calculator extends JFrame {
 		JButton answerButton = new JButton(Language.getString("STR_Calculator.answerButton.text", "RÃ¤kna ut")); //$NON-NLS-1$ //$NON-NLS-2$
 		answerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Vi har en fungerande knapp");
 				setParameters();
 				solveGamma();
 				solveTime();
@@ -210,15 +231,15 @@ public class STR_Calculator extends JFrame {
 			}
 
 			private void setParameters() {
-				if (earthTimeTextField.getText().equals("")) {
+				if (stillTimeTextField.getText().equals("")) {
 					tStill = 0;
 				} else {
-					tStill = Double.parseDouble(earthTimeTextField.getText());
+					tStill = Double.parseDouble(stillTimeTextField.getText());
 				}
-				if (lengthTextField.getText().equals("")) {
+				if (stillLengthTextField.getText().equals("")) {
 					lStill = 0;
 				} else {
-					lStill = Double.parseDouble(lengthTextField.getText());
+					lStill = Double.parseDouble(stillLengthTextField.getText());
 				}
 				if (speedTextField.getText().equals("")) {
 					v = 0;
@@ -235,22 +256,19 @@ public class STR_Calculator extends JFrame {
 			private void showLength() {
 				lengthAnswerTextField.setText(l + "");
 			}
-
+/*
+ * Räkna ut:
+ * l
+ * t
+ * gamma
+ * 
+ */
 			private void solveLength() {
-				if (lengthTextField.getText().equals("")) {
-
-				} else {
-					t = tStill / gamma;
-				}
 				l = lStill / gamma;
 			}
 
 			private void solveTime() {
-				if (earthTimeTextField.getText().equals("")) {
-
-				} else {
 					t = tStill / gamma;
-				}
 			}
 
 			private void solveGamma() {
@@ -269,17 +287,22 @@ public class STR_Calculator extends JFrame {
 		answerButton.setBounds(100, 240, 130, 52);
 		calcPanel.add(answerButton);
 		
-		Canvas canvas = new Canvas();
-		canvas.setBackground(Color.ORANGE);
-		canvas.setBounds(332, 184, 342, 267);
-		calcPanel.add(canvas);
+		/*
+		 * Utrymme för linie som visar minskning
+		 * 
+		 * 
+		 */
+		Canvas lineCanvas = new Canvas();
+		lineCanvas.setBackground(Color.RED);
+		lineCanvas.setBounds(332, 184, 342, 267);
+		calcPanel.add(lineCanvas);
 		
-		lengthTextField = new JTextField();
-		lengthTextField.addKeyListener(new KeyAdapter() {
+		stillLengthTextField = new JTextField();
+		stillLengthTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
-			Double.parseDouble(lengthTextField.getText());
+			Double.parseDouble(stillLengthTextField.getText());
 			lengthInvalidLabel.setText("");
 		} catch (NumberFormatException e1) {
 			lengthInvalidLabel.setText("Endast siffror och punkt");
@@ -287,10 +310,10 @@ public class STR_Calculator extends JFrame {
 		}
 			}
 		});
-		lengthTextField.setToolTipText(Language.getString("STR_Calculator.lengthTextField.toolTipText", "T.ex 30 m")); //$NON-NLS-1$ //$NON-NLS-2$
-		lengthTextField.setColumns(10);
-		lengthTextField.setBounds(180, 42, 150, 31);
-		calcPanel.add(lengthTextField);
+		stillLengthTextField.setToolTipText(Language.getString("STR_Calculator.stillLengthTextField.toolTipText", "T.ex 30 m")); //$NON-NLS-1$ //$NON-NLS-2$
+		stillLengthTextField.setColumns(10);
+		stillLengthTextField.setBounds(180, 42, 150, 31);
+		calcPanel.add(stillLengthTextField);
 		
 		timeAnswerTextField = new JTextField();
 		timeAnswerTextField.setEditable(false);
@@ -324,20 +347,24 @@ public class STR_Calculator extends JFrame {
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setEditable(false);
-		textArea.setText(Language.getString("STR_Calculator.textArea.text", "Tid som har\r\ngÃ¥tt pÃ¥ jorden")); //$NON-NLS-1$ //$NON-NLS-2$
+		textArea.setText(Language.getString("STR_Calculator.textArea.text", "t0")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea.setOpaque(false);
 		textArea.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
-		textArea.setBounds(0, 0, 130, 40);
+		textArea.setBounds(0, 15, 130, 22);
 		calcPanel.add(textArea);
 		
 		JTextArea textArea_1 = new JTextArea();
 		textArea_1.setEditable(false);
-		textArea_1.setText(Language.getString("STR_Calculator.textArea_1.text", "Objektets lÃ¤ngd")); //$NON-NLS-1$ //$NON-NLS-2$
+		textArea_1.setText(Language.getString("STR_Calculator.textArea_1.text", "l0")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea_1.setOpaque(false);
 		textArea_1.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
 		textArea_1.setBounds(180, 15, 130, 26);
 		calcPanel.add(textArea_1);
 		
+		/*
+		 * TODO ändra km/s till m/s
+		 * 
+		 */
 		JTextArea textArea_2 = new JTextArea();
 		textArea_2.setText(Language.getString("STR_Calculator.textArea_2.text", "Objektets hastighet i km/s")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea_2.setOpaque(false);
