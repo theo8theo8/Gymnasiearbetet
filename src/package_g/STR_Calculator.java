@@ -128,6 +128,9 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(logButton);
 		
+		JButton btnKonvaterare = new JButton(Language.getString("STR_Calculator.btnKonvaterare.text", "Konvaterare")); //$NON-NLS-1$ //$NON-NLS-2$
+		menuBar.add(btnKonvaterare);
+		
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
