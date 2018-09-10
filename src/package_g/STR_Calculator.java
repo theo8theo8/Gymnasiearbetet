@@ -31,6 +31,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import java.util.Locale;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerListModel;
+import javax.swing.JList;
+import javax.swing.AbstractListModel;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import java.util.concurrent.TimeUnit;
 
 /*
  * STR_Calculator:
@@ -55,8 +62,12 @@ public class STR_Calculator extends JFrame {
 	double lStill;
 	double l;
 	double gamma;
-	double v;
-	double c = 299792.458; //TODO Sätta rikitgt C
+	double vms;
+	double vkms;
+	double c = 299792.458;
+	private JTextField entryTextField;
+	private JTextField answerTextField;
+
 	
 	
 	public static void main(String[] args) {
@@ -128,8 +139,14 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(logButton);
 		
-		JButton btnKonvaterare = new JButton(Language.getString("STR_Calculator.btnKonvaterare.text", "Konvaterare")); //$NON-NLS-1$ //$NON-NLS-2$
-		menuBar.add(btnKonvaterare);
+		JButton btnKonverterare = new JButton(Language.getString("STR_Calculator.btnKonvaterare.text", "Konverterare")); //$NON-NLS-1$ //$NON-NLS-2$
+		btnKonverterare.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CardLayout c =(CardLayout)(contentPane.getLayout());
+				c.show(contentPane, "conv");
+			}
+		});
+		menuBar.add(btnKonverterare);
 		
 		
 		contentPane = new JPanel();
@@ -153,9 +170,9 @@ public class STR_Calculator extends JFrame {
 		
 		/*
 		 * Textrutor
-		 * Ger meddelande om det är text i rutorna
+		 * Ger meddelande om det ï¿½r text i rutorna
 		 *
-		 *Längd och tid
+		 *Lï¿½ngd och tid
 		 * 
 		 */
 		JLabel timeInvalidLabel = new JLabel(Language.getString("STR_Calculator.timeInvalidLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -245,10 +262,12 @@ public class STR_Calculator extends JFrame {
 					lStill = Double.parseDouble(stillLengthTextField.getText());
 				}
 				if (speedTextField.getText().equals("")) {
-					v = 0;
+					vms = 0;
 				} else {
-					v = Double.parseDouble(speedTextField.getText());
+					vms = Double.parseDouble(speedTextField.getText());
 				}
+				
+				vkms = vms/1000;
 
 			}
 
@@ -260,7 +279,7 @@ public class STR_Calculator extends JFrame {
 				lengthAnswerTextField.setText(l + "");
 			}
 /*
- * Räkna ut:
+ * Rï¿½kna ut:
  * l
  * t
  * gamma
@@ -275,13 +294,13 @@ public class STR_Calculator extends JFrame {
 			}
 
 			private void solveGamma() {
-				gamma = (1 / (Math.sqrt(1 - (Math.pow(v, 2) / Math.pow(c, 2)))));
+				gamma = (1 / (Math.sqrt(1 - (Math.pow(vkms, 2) / Math.pow(c, 2)))));
 			}
 			
 			private void logEverything() {
 			    textTime0Pane.setText(textTime0Pane.getText()+sep+tStill);
 			    textLength0Pane.setText(textLength0Pane.getText()+sep+lStill);
-			    textSpeedPane.setText(textSpeedPane.getText()+sep+v);
+			    textSpeedPane.setText(textSpeedPane.getText()+sep+vms);
 			    textTimePane.setText(textTimePane.getText()+sep+t);
 			    textLengthPane.setText(textLengthPane.getText()+sep+l);
 			    
@@ -291,7 +310,7 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(answerButton);
 		
 		/*
-		 * Utrymme för linie som visar minskning
+		 * Utrymme fï¿½r linie som visar minskning
 		 * 
 		 * 
 		 */
@@ -330,7 +349,7 @@ public class STR_Calculator extends JFrame {
 		lengthAnswerTextField.setBounds(180, 305, 150, 52);
 		calcPanel.add(lengthAnswerTextField);
 		
-		JSlider speedSlider = new JSlider(0, 299793, 150000);
+		JSlider speedSlider = new JSlider(0, 299792458, 149896229);
 		speedSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				try {
@@ -343,8 +362,8 @@ public class STR_Calculator extends JFrame {
 				speedTextField.setText(String.valueOf(speedSlider.getValue()));
 			}
 		});
-		speedSlider.setValue(150000);
-		speedSlider.setMaximum(299793);
+		speedSlider.setValue(149896229);
+		speedSlider.setMaximum(299792458);
 		speedSlider.setBounds(0, 119, 330, 26);
 		calcPanel.add(speedSlider);
 		
@@ -365,11 +384,11 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(textArea_1);
 		
 		/*
-		 * TODO ändra km/s till m/s
+		 * TODO ï¿½ndra km/s till m/s
 		 * 
 		 */
 		JTextArea textArea_2 = new JTextArea();
-		textArea_2.setText(Language.getString("STR_Calculator.textArea_2.text", "Objektets hastighet i km/s")); //$NON-NLS-1$ //$NON-NLS-2$
+		textArea_2.setText(Language.getString("STR_Calculator.textArea_2.text", "Objektets hastighet i m/s")); //$NON-NLS-1$ //$NON-NLS-2$
 		textArea_2.setOpaque(false);
 		textArea_2.setFont(new Font("Gill Sans MT", Font.PLAIN, 16));
 		textArea_2.setBounds(0, 92, 330, 22);
@@ -391,75 +410,14 @@ public class STR_Calculator extends JFrame {
 				speedSlider.setValue((int) value);
 			}
 		});
-		speedTextField.setToolTipText(Language.getString("STR_Calculator.speedTextField.toolTipText", "T.ex 290000 km/s")); //$NON-NLS-1$ //$NON-NLS-2$
-		speedTextField.setText(Language.getString("STR_Calculator.speedTextField.text", "150000")); //$NON-NLS-1$ //$NON-NLS-2$
-		speedTextField.setColumns(10);
+		speedTextField.setToolTipText(Language.getString("STR_Calculator.speedTextField.toolTipText", "T.ex 290000000m/s")); //$NON-NLS-1$ //$NON-NLS-2$
+		speedTextField.setText(Language.getString("STR_Calculator.speedTextField.text", "149896229")); //$NON-NLS-1$ //$NON-NLS-2$
+		speedTextField.setColumns(15);
 		speedTextField.setBounds(125, 156, 80, 25);
 		calcPanel.add(speedTextField);
 		
-		JButton button_n1 = new JButton(Language.getString("STR_Calculator.button_n1.text", "-1")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_n1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			    try {
-				Double.parseDouble(speedTextField.getText());
-				speedInvalidLabel.setText("");
-			} catch (NumberFormatException e1) {
-				speedInvalidLabel.setText("Endast siffror och punkt");
-				
-			}
-			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())-1)));
-			double value = Double.parseDouble(speedTextField.getText());
-			speedSlider.setValue((int) value);
-			}
-			
-		});
-		button_n1.setMargin(new Insets(0, 0, 0, 0));
-		button_n1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		button_n1.setBounds(100, 156, 25, 25);
-		calcPanel.add(button_n1);
-		
-		JButton button_n10 = new JButton(Language.getString("STR_Calculator.button_n10.text", "-10")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_n10.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			    try {
-				Double.parseDouble(speedTextField.getText());
-				speedInvalidLabel.setText("");
-			} catch (NumberFormatException e1) {
-				speedInvalidLabel.setText("Endast siffror och punkt");
-				
-			}
-			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())-10)));
-			double value = Double.parseDouble(speedTextField.getText());
-			speedSlider.setValue((int) value);
-			}
-		});
-		button_n10.setMargin(new Insets(0, 0, 0, 0));
-		button_n10.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		button_n10.setBounds(75, 156, 25, 25);
-		calcPanel.add(button_n10);
-		
-		JButton button_n100 = new JButton(Language.getString("STR_Calculator.button_n100.text", "-100")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_n100.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			    try {
-				Double.parseDouble(speedTextField.getText());
-				speedInvalidLabel.setText("");
-			} catch (NumberFormatException e1) {
-				speedInvalidLabel.setText("Endast siffror och punkt");
-				
-			}
-			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())-100)));
-			double value = Double.parseDouble(speedTextField.getText());
-			speedSlider.setValue((int) value);
-			}
-		});
-		button_n100.setMargin(new Insets(0, 0, 0, 0));
-		button_n100.setFont(new Font("Tahoma", Font.PLAIN, 8));
-		button_n100.setBounds(50, 156, 25, 25);
-		calcPanel.add(button_n100);
-		
-		JButton button_n1000 = new JButton(Language.getString("STR_Calculator.button_n1000.text", "-1000")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_n1000.addActionListener(new ActionListener() {
+		JButton button_n1k = new JButton(Language.getString("STR_Calculator.button_n1.text", "-1k")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_n1k.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			    try {
 				Double.parseDouble(speedTextField.getText());
@@ -472,14 +430,15 @@ public class STR_Calculator extends JFrame {
 			double value = Double.parseDouble(speedTextField.getText());
 			speedSlider.setValue((int) value);
 			}
+			
 		});
-		button_n1000.setMargin(new Insets(0, 0, 0, 0));
-		button_n1000.setFont(new Font("Tahoma", Font.PLAIN, 7));
-		button_n1000.setBounds(25, 156, 25, 25);
-		calcPanel.add(button_n1000);
+		button_n1k.setMargin(new Insets(0, 0, 0, 0));
+		button_n1k.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		button_n1k.setBounds(100, 156, 25, 25);
+		calcPanel.add(button_n1k);
 		
-		JButton button_n10000 = new JButton(Language.getString("STR_Calculator.button_n10000.text", "-10000")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_n10000.addActionListener(new ActionListener() {
+		JButton button_n10k = new JButton(Language.getString("STR_Calculator.button_n10.text", "-10k")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_n10k.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			    try {
 				Double.parseDouble(speedTextField.getText());
@@ -493,13 +452,133 @@ public class STR_Calculator extends JFrame {
 			speedSlider.setValue((int) value);
 			}
 		});
-		button_n10000.setMargin(new Insets(0, 0, 0, 0));
-		button_n10000.setFont(new Font("Tahoma", Font.PLAIN, 6));
-		button_n10000.setBounds(0, 156, 25, 25);
-		calcPanel.add(button_n10000);
+		button_n10k.setMargin(new Insets(0, 0, 0, 0));
+		button_n10k.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		button_n10k.setBounds(75, 156, 25, 25);
+		calcPanel.add(button_n10k);
 		
-		JButton button_p10000 = new JButton(Language.getString("STR_Calculator.button_p10000.text", "+10000")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_p10000.addActionListener(new ActionListener() {
+		JButton button_n100k = new JButton(Language.getString("STR_Calculator.button_n100.text", "-100k")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_n100k.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			    try {
+				Double.parseDouble(speedTextField.getText());
+				speedInvalidLabel.setText("");
+			} catch (NumberFormatException e1) {
+				speedInvalidLabel.setText("Endast siffror och punkt");
+				
+			}
+			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())-100000)));
+			double value = Double.parseDouble(speedTextField.getText());
+			speedSlider.setValue((int) value);
+			}
+		});
+		button_n100k.setMargin(new Insets(0, 0, 0, 0));
+		button_n100k.setFont(new Font("Tahoma", Font.PLAIN, 8));
+		button_n100k.setBounds(50, 156, 25, 25);
+		calcPanel.add(button_n100k);
+		
+		JButton button_n1m = new JButton(Language.getString("STR_Calculator.button_n1000.text", "-1m")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_n1m.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			    try {
+				Double.parseDouble(speedTextField.getText());
+				speedInvalidLabel.setText("");
+			} catch (NumberFormatException e1) {
+				speedInvalidLabel.setText("Endast siffror och punkt");
+				
+			}
+			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())-1000000)));
+			double value = Double.parseDouble(speedTextField.getText());
+			speedSlider.setValue((int) value);
+			}
+		});
+		button_n1m.setMargin(new Insets(0, 0, 0, 0));
+		button_n1m.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		button_n1m.setBounds(25, 156, 25, 25);
+		calcPanel.add(button_n1m);
+		
+		JButton button_n10m = new JButton(Language.getString("STR_Calculator.button_n10000.text", "-10m")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_n10m.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			    try {
+				Double.parseDouble(speedTextField.getText());
+				speedInvalidLabel.setText("");
+			} catch (NumberFormatException e1) {
+				speedInvalidLabel.setText("Endast siffror och punkt");
+				
+			}
+			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())-10000000)));
+			double value = Double.parseDouble(speedTextField.getText());
+			speedSlider.setValue((int) value);
+			}
+		});
+		button_n10m.setMargin(new Insets(0, 0, 0, 0));
+		button_n10m.setFont(new Font("Tahoma", Font.PLAIN, 8));
+		button_n10m.setBounds(0, 156, 25, 25);
+		calcPanel.add(button_n10m);
+		
+		JButton button_p10m = new JButton(Language.getString("STR_Calculator.button_p10000.text", "+10m")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_p10m.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			    try {
+				Double.parseDouble(speedTextField.getText());
+				speedInvalidLabel.setText("");
+			} catch (NumberFormatException e1) {
+				speedInvalidLabel.setText("Endast siffror och punkt");
+				
+			}
+			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())+10000000)));
+			double value = Double.parseDouble(speedTextField.getText());
+			speedSlider.setValue((int) value);
+			}
+		});
+		button_p10m.setMargin(new Insets(0, 0, 0, 0));
+		button_p10m.setFont(new Font("Tahoma", Font.PLAIN, 8));
+		button_p10m.setBounds(305, 156, 25, 25);
+		calcPanel.add(button_p10m);
+		
+		JButton button_p1m = new JButton(Language.getString("STR_Calculator.button_p1000.text", "+1m")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_p1m.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			    try {
+				Double.parseDouble(speedTextField.getText());
+				speedInvalidLabel.setText("");
+			} catch (NumberFormatException e1) {
+				speedInvalidLabel.setText("Endast siffror och punkt");
+				
+			}
+			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())+1000000)));
+			double value = Double.parseDouble(speedTextField.getText());
+			speedSlider.setValue((int) value);
+			}
+		});
+		button_p1m.setMargin(new Insets(0, 0, 0, 0));
+		button_p1m.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		button_p1m.setBounds(280, 156, 25, 25);
+		calcPanel.add(button_p1m);
+		
+		JButton button_p100k = new JButton(Language.getString("STR_Calculator.button_p100.text", "+100k")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_p100k.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			    try {
+				Double.parseDouble(speedTextField.getText());
+				speedInvalidLabel.setText("");
+			} catch (NumberFormatException e1) {
+				speedInvalidLabel.setText("Endast siffror och punkt");
+				
+			}
+			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())+100000)));
+			double value = Double.parseDouble(speedTextField.getText());
+			speedSlider.setValue((int) value);
+			}
+		});
+		button_p100k.setMargin(new Insets(0, 0, 0, 0));
+		button_p100k.setFont(new Font("Tahoma", Font.PLAIN, 7));
+		button_p100k.setBounds(255, 156, 25, 25);
+		calcPanel.add(button_p100k);
+		
+		JButton button_p10k = new JButton(Language.getString("STR_Calculator.button_p10.text", "+10k")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_p10k.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			    try {
 				Double.parseDouble(speedTextField.getText());
@@ -513,13 +592,13 @@ public class STR_Calculator extends JFrame {
 			speedSlider.setValue((int) value);
 			}
 		});
-		button_p10000.setMargin(new Insets(0, 0, 0, 0));
-		button_p10000.setFont(new Font("Tahoma", Font.PLAIN, 6));
-		button_p10000.setBounds(305, 156, 25, 25);
-		calcPanel.add(button_p10000);
+		button_p10k.setMargin(new Insets(0, 0, 0, 0));
+		button_p10k.setFont(new Font("Tahoma", Font.PLAIN, 8));
+		button_p10k.setBounds(230, 156, 25, 25);
+		calcPanel.add(button_p10k);
 		
-		JButton button_p1000 = new JButton(Language.getString("STR_Calculator.button_p1000.text", "+1000")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_p1000.addActionListener(new ActionListener() {
+		JButton button_p1k = new JButton(Language.getString("STR_Calculator.button_p1.text", "+1k")); //$NON-NLS-1$ //$NON-NLS-2$
+		button_p1k.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			    try {
 				Double.parseDouble(speedTextField.getText());
@@ -533,70 +612,10 @@ public class STR_Calculator extends JFrame {
 			speedSlider.setValue((int) value);
 			}
 		});
-		button_p1000.setMargin(new Insets(0, 0, 0, 0));
-		button_p1000.setFont(new Font("Tahoma", Font.PLAIN, 6));
-		button_p1000.setBounds(280, 156, 25, 25);
-		calcPanel.add(button_p1000);
-		
-		JButton button_p100 = new JButton(Language.getString("STR_Calculator.button_p100.text", "+100")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_p100.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			    try {
-				Double.parseDouble(speedTextField.getText());
-				speedInvalidLabel.setText("");
-			} catch (NumberFormatException e1) {
-				speedInvalidLabel.setText("Endast siffror och punkt");
-				
-			}
-			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())+100)));
-			double value = Double.parseDouble(speedTextField.getText());
-			speedSlider.setValue((int) value);
-			}
-		});
-		button_p100.setMargin(new Insets(0, 0, 0, 0));
-		button_p100.setFont(new Font("Tahoma", Font.PLAIN, 8));
-		button_p100.setBounds(255, 156, 25, 25);
-		calcPanel.add(button_p100);
-		
-		JButton button_p10 = new JButton(Language.getString("STR_Calculator.button_p10.text", "+10")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_p10.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			    try {
-				Double.parseDouble(speedTextField.getText());
-				speedInvalidLabel.setText("");
-			} catch (NumberFormatException e1) {
-				speedInvalidLabel.setText("Endast siffror och punkt");
-				
-			}
-			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())+10)));
-			double value = Double.parseDouble(speedTextField.getText());
-			speedSlider.setValue((int) value);
-			}
-		});
-		button_p10.setMargin(new Insets(0, 0, 0, 0));
-		button_p10.setFont(new Font("Tahoma", Font.PLAIN, 10));
-		button_p10.setBounds(230, 156, 25, 25);
-		calcPanel.add(button_p10);
-		
-		JButton button_p1 = new JButton(Language.getString("STR_Calculator.button_p1.text", "+1")); //$NON-NLS-1$ //$NON-NLS-2$
-		button_p1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			    try {
-				Double.parseDouble(speedTextField.getText());
-				speedInvalidLabel.setText("");
-			} catch (NumberFormatException e1) {
-				speedInvalidLabel.setText("Endast siffror och punkt");
-				
-			}
-			speedTextField.setText(String.valueOf((Double.parseDouble(speedTextField.getText())+1)));
-			double value = Double.parseDouble(speedTextField.getText());
-			speedSlider.setValue((int) value);
-			}
-		});
-		button_p1.setMargin(new Insets(0, 0, 0, 0));
-		button_p1.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		button_p1.setBounds(205, 156, 25, 25);
-		calcPanel.add(button_p1);
+		button_p1k.setMargin(new Insets(0, 0, 0, 0));
+		button_p1k.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		button_p1k.setBounds(205, 156, 25, 25);
+		calcPanel.add(button_p1k);
 		
 		
 		
@@ -648,5 +667,68 @@ public class STR_Calculator extends JFrame {
 		JLabel logLengthLabel = new JLabel(Language.getString("STR_Calculator.logLengthLabel.text", "Resultat - l\u00E4ngd")); //$NON-NLS-1$ //$NON-NLS-2$
 		logLengthLabel.setBounds(544, 0, 126, 25);
 		logPanel.add(logLengthLabel);
-	}
-}
+		
+		JPanel convPanel = new JPanel();
+		contentPane.add(convPanel, "conv");
+		convPanel.setLayout(null);
+		
+		String[] converterOptions = {"Nanoseconds", "Microseconds", "Milliseconds", "Seconds", "Minutes", "Hours", "Days", "m/s", "km/s", "km/h"};
+		
+		JComboBox<String> entryBox = new JComboBox<>();
+		entryBox.setMaximumRowCount(10);
+		entryBox.setModel(new DefaultComboBoxModel<>(converterOptions));
+		entryBox.setBounds(513, 11, 152, 57);
+		convPanel.add(entryBox);
+		
+		JComboBox<String> answerBox = new JComboBox<>();
+		answerBox.setModel(new DefaultComboBoxModel<>(converterOptions));
+		answerBox.setMaximumRowCount(10);
+		answerBox.setBounds(513, 112, 152, 57);
+		convPanel.add(answerBox);
+		
+		JLabel warningBoxLabel = new JLabel(Language.getString("STR_Calculator.lblNewLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
+		warningBoxLabel.setForeground(Color.RED);
+		warningBoxLabel.setBounds(513, 79, 152, 22);
+		convPanel.add(warningBoxLabel);
+		
+		answerTextField = new JTextField();
+		answerTextField.setColumns(10);
+		answerTextField.setBounds(10, 112, 493, 57);
+		convPanel.add(answerTextField);
+		
+		entryTextField = new JTextField();
+		entryTextField.setBounds(10, 11, 493, 57);
+		convPanel.add(entryTextField);
+		entryTextField.setColumns(10);
+		
+		//TODO fÃ¶rsÃ¶k att fixa detta, sjÃ¤lva konverteraren
+		
+		/*JButton btnNewButton_1 = new JButton(Language.getString("STR_Calculator.btnNewButton_1.text", "Convert")); //$NON-NLS-1$ //$NON-NLS-2$
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (entryBox<>.getModel().equals("Nanoseconds")) {
+					System.out.println("Vi har nano");
+					if (answerBox.getModel().equals("Nanoseconds")) {
+						warningBoxLabel.setText("VÃ¤lj olika vÃ¤rdetyper!");
+					} else if (answerBox.getModel().equals("Microseconds")) {
+						answerTextField.setText((Double.parseDouble(entryTextField.getText())/1000) + "");
+					} else if (answerBox.getModel().equals("Milliseconds")) {
+						answerTextField.setText((Double.parseDouble(entryTextField.getText())/1000000) + "");
+					} else if (answerBox.getModel().equals("Seconds")) {
+						answerTextField.setText((Double.parseDouble(entryTextField.getText())/1000000000) + "");
+					} else if (answerBox.getModel().equals("Minutes")) {
+						answerTextField.setText((Double.parseDouble(entryTextField.getText())/1000000000/1000) + "");
+					} else if (answerBox.getModel().equals("Hours")) {
+						answerTextField.setText((Double.parseDouble(entryTextField.getText())/1000000000/60000) + "");
+					} else if (answerBox.getModel().equals("Days")) {
+						answerTextField.setText((Double.parseDouble(entryTextField.getText())/1000000000/1440000) + "");
+					} else if (answerBox.getModel().equals("m/s")||answerBox.getModel().equals("km/s")||answerBox.getModel().equals("km/h")) {
+						warningBoxLabel.setText("VÃ¤lj vÃ¤rdetyper av samma typ");
+					}
+				}
+			}
+		});
+		btnNewButton_1.setBounds(212, 79, 89, 23);
+		convPanel.add(btnNewButton_1);*/
+
+	}}
