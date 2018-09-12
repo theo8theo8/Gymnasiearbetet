@@ -35,6 +35,7 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerListModel;
 import javax.swing.JList;
 import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import java.util.concurrent.TimeUnit;
@@ -65,8 +66,10 @@ public class STR_Calculator extends JFrame {
 	double vms;
 	double vkms;
 	double c = 299792.458;
-	private JTextField entryTextField;
-	private JTextField answerTextField;
+	private JTextField entryTimeTextField;
+	private JTextField answerTimeTextField;
+	private JTextField entrySpeedTextField;
+	private JTextField answerSpeedTextField;
 
 	
 	
@@ -672,41 +675,100 @@ public class STR_Calculator extends JFrame {
 		contentPane.add(convPanel, "conv");
 		convPanel.setLayout(null);
 		
-		String[] converterOptions = {"Nanoseconds", "Microseconds", "Milliseconds", "Seconds", "Minutes", "Hours", "Days", "m/s", "km/s", "km/h"};
+		String[] timeConverterOptions = {"Nanoseconds", "Microseconds", "Milliseconds", "Seconds", "Minutes", "Hours", "Days"};
+		String[] speedConverterOptions = {"m/s", "km/s", "km/h"};
 		
-		JComboBox<String> entryBox = new JComboBox<>();
-		entryBox.setMaximumRowCount(10);
-		entryBox.setModel(new DefaultComboBoxModel<>(converterOptions));
-		entryBox.setBounds(513, 11, 152, 57);
-		convPanel.add(entryBox);
+		JComboBox<String> entryTimeBox = new JComboBox<>();
+		entryTimeBox.setMaximumRowCount(10);
+		entryTimeBox.setModel(new DefaultComboBoxModel<>(timeConverterOptions));
+		entryTimeBox.setBounds(513, 11, 152, 57);
+		convPanel.add(entryTimeBox);
 		
-		JComboBox<String> answerBox = new JComboBox<>();
-		answerBox.setModel(new DefaultComboBoxModel<>(converterOptions));
-		answerBox.setMaximumRowCount(10);
-		answerBox.setBounds(513, 112, 152, 57);
-		convPanel.add(answerBox);
+		JComboBox<String> answerTimeBox = new JComboBox<>();
+		answerTimeBox.setModel(new DefaultComboBoxModel<>(timeConverterOptions));
+		answerTimeBox.setMaximumRowCount(10);
+		answerTimeBox.setBounds(513, 112, 152, 57);
+		convPanel.add(answerTimeBox);
 		
-		JLabel warningBoxLabel = new JLabel(Language.getString("STR_Calculator.lblNewLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
-		warningBoxLabel.setForeground(Color.RED);
-		warningBoxLabel.setBounds(513, 79, 152, 22);
-		convPanel.add(warningBoxLabel);
+		JLabel warningTimeBoxLabel = new JLabel("");
+		warningTimeBoxLabel.setForeground(Color.RED);
+		warningTimeBoxLabel.setBounds(513, 79, 152, 22);
+		convPanel.add(warningTimeBoxLabel);
 		
-		answerTextField = new JTextField();
-		answerTextField.setColumns(10);
-		answerTextField.setBounds(10, 112, 493, 57);
-		convPanel.add(answerTextField);
+		JLabel warningSpeedBoxLabel = new JLabel("");
+		warningSpeedBoxLabel.setForeground(Color.RED);
+		warningSpeedBoxLabel.setBounds(513, 307, 152, 22);
+		convPanel.add(warningSpeedBoxLabel);
 		
-		entryTextField = new JTextField();
-		entryTextField.setBounds(10, 11, 493, 57);
-		convPanel.add(entryTextField);
-		entryTextField.setColumns(10);
+		answerTimeTextField = new JTextField();
+		answerTimeTextField.setColumns(10);
+		answerTimeTextField.setBounds(10, 112, 493, 57);
+		convPanel.add(answerTimeTextField);
+		
+		entryTimeTextField = new JTextField();
+		entryTimeTextField.setBounds(10, 11, 493, 57);
+		convPanel.add(entryTimeTextField);
+		entryTimeTextField.setColumns(10);
+		
+		entrySpeedTextField = new JTextField();
+		entrySpeedTextField.setColumns(10);
+		entrySpeedTextField.setBounds(10, 240, 493, 57);
+		convPanel.add(entrySpeedTextField);
+		
+		answerSpeedTextField = new JTextField();
+		answerSpeedTextField.setColumns(10);
+		answerSpeedTextField.setBounds(10, 340, 493, 57);
+		convPanel.add(answerSpeedTextField);
+		
+		JComboBox<String> entrySpeedBox = new JComboBox<String>();
+		entrySpeedBox.setMaximumRowCount(10);
+		entrySpeedBox.setModel(new DefaultComboBoxModel<String>(speedConverterOptions));
+		entrySpeedBox.setBounds(513, 240, 152, 57);
+		convPanel.add(entrySpeedBox);
+		
+		JComboBox<String> answerSpeedBox = new JComboBox<String>();
+		answerSpeedBox.setMaximumRowCount(10);
+		answerSpeedBox.setModel(new DefaultComboBoxModel<String>(speedConverterOptions));
+		answerSpeedBox.setBounds(513, 340, 152, 57);
+		convPanel.add(answerSpeedBox);
 		
 		//TODO försök att fixa detta, själva konverteraren
 		
-		/*JButton btnNewButton_1 = new JButton(Language.getString("STR_Calculator.btnNewButton_1.text", "Convert")); //$NON-NLS-1$ //$NON-NLS-2$
+	
+		
+
+		
+	JButton btnNewButton_1 = new JButton(Language.getString("STR_Calculator.btnNewButton_1.text", "Convert")); //$NON-NLS-1$ //$NON-NLS-2$
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (entryBox<>.getModel().equals("Nanoseconds")) {
+				System.out.println("ACTION");
+				ComboBoxModel<String> converterEntrySpeedType = entrySpeedBox.getModel(); 
+				ComboBoxModel<String> converterAnswerSpeedType = answerSpeedBox.getModel(); 
+				switch (converterEntrySpeedType.toString()) {
+        case "m/s":
+        	System.out.println("Meter/s");
+            switch (converterAnswerSpeedType.toString()) {
+            case "m/s":
+            	warningSpeedBoxLabel.setText("Välj olika värdetyper!");
+            	  break;
+            case "km/s":
+            	answerSpeedTextField.setText((Double.parseDouble(entrySpeedTextField.getText())/1000) + "");
+                break;
+            case "km/h":
+            	
+            	break; 
+            }
+            break;
+        case "km/s":
+            
+            break;
+        case "km/h":
+        	
+        	break; 
+    }
+				
+				
+			/*	if (entryBox<>.getModel().equals("Nanoseconds")) {
 					System.out.println("Vi har nano");
 					if (answerBox.getModel().equals("Nanoseconds")) {
 						warningBoxLabel.setText("Välj olika värdetyper!");
@@ -725,10 +787,12 @@ public class STR_Calculator extends JFrame {
 					} else if (answerBox.getModel().equals("m/s")||answerBox.getModel().equals("km/s")||answerBox.getModel().equals("km/h")) {
 						warningBoxLabel.setText("Välj värdetyper av samma typ");
 					}
-				}
+				}*/
 			}
 		});
 		btnNewButton_1.setBounds(212, 79, 89, 23);
-		convPanel.add(btnNewButton_1);*/
+		convPanel.add(btnNewButton_1); 
+		
+	
 
 	}}
