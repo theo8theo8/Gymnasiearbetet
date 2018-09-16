@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Insets;
 
 import java.text.DecimalFormat;
@@ -33,6 +34,12 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.Cursor;
+import java.awt.Dimension;
+
+import javax.swing.ScrollPaneConstants;
+import javax.swing.DropMode;
+import javax.swing.Icon;
 
 /*
  * STR_Calculator:
@@ -170,6 +177,34 @@ JPanel calcPanel = new JPanel();
 contentPane.add(calcPanel, "calc");
 calcPanel.setLayout(null);
 
+JLabel lineStaticImage = new JLabel(Language.getString("STR_Calculator.lblLinestaticimage.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
+lineStaticImage.setBackground(Color.RED);
+lineStaticImage.setIcon(new ImageIcon(this.getClass().getResource("/trainPicture.png")));
+lineStaticImage.setBounds(340, 211, 325, 50);
+calcPanel.add(lineStaticImage);
+
+JLabel lineScalableImage = new JLabel(Language.getString("STR_Calculator.lineScalableImage.text", (String) null)); //$NON-NLS-1$
+lineScalableImage.setBackground(Color.RED);
+lineScalableImage.setIcon(new ImageIcon(this.getClass().getResource("/trainPicture.png")));
+lineScalableImage.setBounds(340, 272, 325, 50);
+calcPanel.add(lineScalableImage);
+
+JLabel minLengthLabel = new JLabel(Language.getString("STR_Calculator.lblm.text", "0m")); //$NON-NLS-1$ //$NON-NLS-2$
+minLengthLabel.setBounds(340, 259, 14, 14);
+calcPanel.add(minLengthLabel);
+
+JLabel maxLengthLabel = new JLabel();
+maxLengthLabel.setBounds(619, 259, 46, 14);
+calcPanel.add(maxLengthLabel);
+
+JLabel minFLengthLabel = new JLabel(Language.getString("STR_Calculator.lblm.text", "0m")); //$NON-NLS-1$ //$NON-NLS-2$
+minFLengthLabel.setBounds(340, 324, 14, 14);
+calcPanel.add(minFLengthLabel);
+
+JLabel maxFLengthLabel = new JLabel(Language.getString("STR_Calculator.lblNewLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
+maxFLengthLabel.setBounds(619, 324, 46, 14);
+calcPanel.add(maxFLengthLabel);
+
 /*
  * Textrutor
  * Ger meddelande om det �r text i rutorna
@@ -212,33 +247,50 @@ stillTimeTextField.setColumns(10);
 stillTimeTextField.setBounds(0, 42, 150, 31);
 calcPanel.add(stillTimeTextField);
 
-JScrollPane logScrollPane = new JScrollPane();
-contentPane.add(logScrollPane, "logScroll");
+
 
 JPanel logPanel = new JPanel();
-logScrollPane.setViewportView(logPanel);
+logPanel.setAutoscrolls(true);
+//logScrollPane.setViewportView(logPanel);
+logPanel.setPreferredSize(new Dimension(0, 10000));
 logPanel.setLayout(null);
 
 JTextPane textTime0Pane = new JTextPane();
-textTime0Pane.setBounds(0, 25, 126, 425);
+textTime0Pane.setEditable(false);
+textTime0Pane.setBounds(0, 25, 100, 10000);
 logPanel.add(textTime0Pane);
 
 JTextPane textLength0Pane = new JTextPane();
-textLength0Pane.setBounds(136, 25, 126, 425);
+textLength0Pane.setEditable(false);
+textLength0Pane.setBounds(110, 25, 100, 10000);
 logPanel.add(textLength0Pane);
 
 JTextPane textSpeedPane = new JTextPane();
-textSpeedPane.setBounds(272, 25, 126, 425);
+textSpeedPane.setEditable(false);
+textSpeedPane.setBounds(220, 25, 100, 10000);
 logPanel.add(textSpeedPane);
 
 JTextPane textTimePane = new JTextPane();
-textTimePane.setBounds(408, 25, 126, 425);
+textTimePane.setEditable(false);
+textTimePane.setBounds(330, 25, 100, 10000);
 logPanel.add(textTimePane);
 
 JTextPane textLengthPane = new JTextPane();
-textLengthPane.setBounds(544, 25, 126, 425);
+textLengthPane.setEditable(false);
+textLengthPane.setBounds(440, 25, 100, 10000);
 logPanel.add(textLengthPane);
 
+JTextPane textGammaPane = new JTextPane();
+textGammaPane.setEditable(false);
+textGammaPane.setBounds(550, 25, 100, 10000);
+logPanel.add(textGammaPane);
+
+JScrollPane logScrollPane = new JScrollPane(logPanel);
+logScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+logScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+logScrollPane.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+logScrollPane.setAutoscrolls(true);
+contentPane.add(logScrollPane, "logScroll");
 
 JButton answerButton = new JButton(Language.getString("STR_Calculator.answerButton.text", "Räkna ut")); //$NON-NLS-1$ //$NON-NLS-2$
 answerButton.addActionListener(new ActionListener() {
@@ -250,6 +302,7 @@ answerButton.addActionListener(new ActionListener() {
 		showTime();
 		showLength();
 		logEverything();
+		showPics();
 	}
 
 	private void setParameters() {
@@ -280,6 +333,18 @@ answerButton.addActionListener(new ActionListener() {
 	private void showLength() {
 		lengthAnswerTextField.setText(l + "");
 	}
+	
+	private void showPics() {
+		double scaleFactor = (l/lStill)*325;
+		ImageIcon originalImage = new ImageIcon(this.getClass().getResource("/trainPicture.png"));
+		Image newImage = originalImage.getImage().getScaledInstance((int)scaleFactor, 50, Image.SCALE_DEFAULT);
+		ImageIcon scaledImageIcon = new ImageIcon(newImage);
+		lineScalableImage.setIcon(scaledImageIcon);
+		maxLengthLabel.setText((int)lStill+ "m");
+		maxFLengthLabel.setText((int)l + "m");
+		double labelPlacement = (l/lStill)*265+354;
+		maxFLengthLabel.setBounds((int)labelPlacement, 324, 46, 14);
+	}
 /*
  * R�kna ut:
  * l
@@ -305,21 +370,13 @@ answerButton.addActionListener(new ActionListener() {
 	    textSpeedPane.setText(textSpeedPane.getText()+sep+vms);
 	    textTimePane.setText(textTimePane.getText()+sep+t);
 	    textLengthPane.setText(textLengthPane.getText()+sep+l);
+	    textGammaPane.setText(textGammaPane.getText()+sep+gamma);
 	    
 	}
 });
 answerButton.setBounds(100, 240, 130, 52);
 calcPanel.add(answerButton);
 
-/*
- * Utrymme f�r linie som visar minskning
- * 
- * 
- */
-Canvas lineCanvas = new Canvas();
-lineCanvas.setBackground(Color.RED);
-lineCanvas.setBounds(332, 184, 342, 267);
-calcPanel.add(lineCanvas);
 
 stillLengthTextField = new JTextField();
 stillLengthTextField.addKeyListener(new KeyAdapter() {
@@ -386,6 +443,7 @@ textArea_1.setBounds(180, 15, 130, 26);
 calcPanel.add(textArea_1);
 
 JTextArea textArea_2 = new JTextArea();
+textArea_2.setEditable(false);
 textArea_2.setText(Language.getString("STR_Calculator.textArea_2.text", "Objektets hastighet i m/s")); //$NON-NLS-1$ //$NON-NLS-2$
 textArea_2.setOpaque(false);
 textArea_2.setFont(new Font("Gill Sans MT", Font.PLAIN, 16));
@@ -617,6 +675,9 @@ calcPanel.add(button_p1k);
 
 
 
+
+
+
 NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
 DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
 decimalFormat.setGroupingUsed(false);
@@ -645,26 +706,29 @@ infoPanel.add(txtrLngdkontraktionFungerarS);
 
 
 
-JLabel logTime0Label = new JLabel(Language.getString("STR_Calculator.lblNewLabel.text", (String) null)); //$NON-NLS-1$
+JLabel logTime0Label = new JLabel(Language.getString("STR_Calculator.logTime0Label.text", (String) null)); //$NON-NLS-1$
 logTime0Label.setFont(new Font("Tahoma", Font.PLAIN, 10));
-logTime0Label.setBounds(0, 0, 126, 25);
+logTime0Label.setBounds(0, 0, 100, 25);
 logPanel.add(logTime0Label);
 
 JLabel logLength0Label = new JLabel(Language.getString("STR_Calculator.logLength0Label.text", "Objektets l\u00E4ngd")); //$NON-NLS-1$ //$NON-NLS-2$
-logLength0Label.setBounds(136, 0, 126, 25);
+logLength0Label.setBounds(110, 0, 100, 25);
 logPanel.add(logLength0Label);
 
 JLabel logSpeedLabel = new JLabel(Language.getString("STR_Calculator.logSpeedLabel.text", "Objektets hastighet")); //$NON-NLS-1$ //$NON-NLS-2$
-logSpeedLabel.setBounds(272, 0, 126, 25);
+logSpeedLabel.setBounds(220, 0, 100, 25);
 logPanel.add(logSpeedLabel);
 
 JLabel logTimeLabel = new JLabel(Language.getString("STR_Calculator.logTimeLabel.text", "Resultat - tid")); //$NON-NLS-1$ //$NON-NLS-2$
-logTimeLabel.setBounds(408, 0, 126, 25);
+logTimeLabel.setBounds(330, 0, 100, 25);
 logPanel.add(logTimeLabel);
 
 JLabel logLengthLabel = new JLabel(Language.getString("STR_Calculator.logLengthLabel.text", "Resultat - l\u00E4ngd")); //$NON-NLS-1$ //$NON-NLS-2$
-logLengthLabel.setBounds(544, 0, 126, 25);
+logLengthLabel.setBounds(440, 0, 100, 25);
 logPanel.add(logLengthLabel);
+JLabel gammaLabel = new JLabel(Language.getString("STR_Calculator.gammaLabel.text", (String) null)); //$NON-NLS-1$
+gammaLabel.setBounds(550, 0, 100, 25);
+logPanel.add(gammaLabel);
 
 JPanel convPanel = new JPanel();
 contentPane.add(convPanel, "conv");
@@ -685,12 +749,12 @@ answerTimeBox.setMaximumRowCount(10);
 answerTimeBox.setBounds(515, 110, 150, 60);
 convPanel.add(answerTimeBox);
 
-JLabel warningTimeBoxLabel = new JLabel("");
+JLabel warningTimeBoxLabel = new JLabel(Language.getString("STR_Calculator.warningTimeBoxLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
 warningTimeBoxLabel.setForeground(Color.RED);
 warningTimeBoxLabel.setBounds(515, 81, 150, 20);
 convPanel.add(warningTimeBoxLabel);
 
-JLabel warningSpeedBoxLabel = new JLabel("");
+JLabel warningSpeedBoxLabel = new JLabel(Language.getString("STR_Calculator.warningSpeedBoxLabel.text", "")); //$NON-NLS-1$ //$NON-NLS-2$
 warningSpeedBoxLabel.setForeground(Color.RED);
 warningSpeedBoxLabel.setBounds(515, 351, 150, 20);
 convPanel.add(warningSpeedBoxLabel);
@@ -1028,4 +1092,5 @@ case "km/h":
 	});
 	converterButton.setBounds(200, 210, 115, 32);
 	convPanel.add(converterButton); 
-}}
+}	
+}
