@@ -15,33 +15,30 @@ import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ScrollPaneConstants;
 
 import java.awt.EventQueue;
 import java.awt.CardLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.awt.event.ActionEvent;
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Cursor;
+import java.awt.Dimension;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import java.util.Locale;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import java.awt.Cursor;
-import java.awt.Dimension;
-
-import javax.swing.ScrollPaneConstants;
-import javax.swing.DropMode;
-import javax.swing.Icon;
 
 /*
  * STR_Calculator:
