@@ -113,16 +113,6 @@ public class STR_Calculator extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 
-		// Menu knapp
-		JButton menuButton = new JButton("Meny");
-		menuButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				CardLayout c = (CardLayout) (contentPane.getLayout());
-				c.show(contentPane, "menu");
-			}
-		});
-		menuBar.add(menuButton);
-
 		// Kalkylator knapp
 		JButton calcButton = new JButton("Kalkylator");
 		calcButton.addActionListener(new ActionListener() {
@@ -166,16 +156,6 @@ public class STR_Calculator extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
-
-		JPanel menuPanel = new JPanel();
-		contentPane.add(menuPanel, "menu");
-
-		/*
-		 * 
-		 * Ska bort
-		 */
-		JButton btnNewButton = new JButton("New button");
-		menuPanel.add(btnNewButton);
 
 		JPanel calcPanel = new JPanel();
 		contentPane.add(calcPanel, "calc");
