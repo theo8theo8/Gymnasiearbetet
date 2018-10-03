@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.JToggleButton;
 
 import java.awt.EventQueue;
 import java.awt.CardLayout;
@@ -31,6 +32,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,10 +42,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import java.util.Locale;
-import javax.swing.JToggleButton;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-
 /*
  * STR_Calculator:
  * 
@@ -71,27 +70,33 @@ public class STR_Calculator extends JFrame {
 	double vms;
 	double vkms;
 	double c = 299792.458;
+	
 	private JTextField entryTimeTextField;
 	private JTextField answerTimeTextField;
 	private JTextField entrySpeedTextField;
 	private JTextField answerSpeedTextField;
 	private JTextField entryLengthTextField;
 	private JTextField answerLengthTextField;
-
+	private JTextField percentTextField;
+	
 	String converterEntrySpeedType;
 	String converterAnswerSpeedType;
 	String converterEntryTimeType;
 	String converterAnswerTimeType;
 	String converterEntryLengthType;
 	String converterAnswerLengthType;
-	private JTextField percentTextField;
+	
+	
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+				    //Gör så att programmet ser rätt ut för just det operativsystem man använder
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					//Skapar hela framen/programmet
 					STR_Calculator frame = new STR_Calculator();
+					//Gör så att programmet syns
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -101,20 +106,26 @@ public class STR_Calculator extends JFrame {
 	}
 
 	/**
-	 * Create the frame.
+	 * Här skapas framen/programmet
 	 */
 	public STR_Calculator() {
+	    
+	    	//Sätter ikonen för programmet, en tecknad bild på Einstein
 		setIconImage(new ImageIcon(this.getClass().getResource("/icon_Einstein.jpg")).getImage());
-
+		//Väljer att det ej ska var möjligt att skala om fönstret. Detta då vår design endast är gjord för en viss storlek på framen.
 		setResizable(false);
+		//När man trycker på kryss så avslutas programmet fullständigt
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//Sätter fönsterts mått
 		setBounds(100, 100, 691, 516);
 
+		//Skapar en menubar som ligger högst upp i fönstret och där alla flikar finns
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 
-		// Kalkylator knapp
+		//Skapar en knapp för att växla till kalkylatorn
 		JButton calcButton = new JButton("Kalkylator");
+		//En actionlistener så att det som syns i framen ändras till kalylatorpanelen när man trycker
 		calcButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CardLayout c = (CardLayout) (contentPane.getLayout());
@@ -123,8 +134,9 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(calcButton);
 
-		// Info knapp
+		//Skapar en knapp för att växla till info-sidan
 		JButton infoButton = new JButton("Info");
+		//En actionlistener så att det som syns i framen ändras till infopanelen när man trycker
 		infoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CardLayout c = (CardLayout) (contentPane.getLayout());
@@ -133,8 +145,9 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(infoButton);
 
-		// Logg knapp
+		//Skapar en knapp för att växla till loggen
 		JButton logButton = new JButton("Logg");
+		//En actionlistener så att det som syns i framen ändras till loggpanelen när man trycker
 		logButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CardLayout c = (CardLayout) (contentPane.getLayout());
@@ -143,20 +156,24 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(logButton);
 
-		JButton btnKonverterare = new JButton("Konverterare");
-		btnKonverterare.addActionListener(new ActionListener() {
+		//Skapar en knapp för att växla till konverteraren
+		JButton convButton = new JButton("Konverterare");
+		//En actionlistener så att det som syns i framen ändras till konverterarpanelen när man trycker
+		convButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				CardLayout c = (CardLayout) (contentPane.getLayout());
 				c.show(contentPane, "conv");
 			}
 		});
-		menuBar.add(btnKonverterare);
-
+		menuBar.add(convButton);
+		
+		//Skapar en panel som är en grund för alla de andra panelerna
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
 
+		//Skapar kalkylatorpanelen där sedan ett antal komponenter kommer att adderas
 		JPanel calcPanel = new JPanel();
 		contentPane.add(calcPanel, "calc");
 		calcPanel.setLayout(null);
@@ -190,9 +207,9 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(maxFLengthLabel);
 
 		/*
-		 * Textrutor Ger meddelande om det �r text i rutorna
+		 * Textrutor Ger meddelande om det är text i rutorna
 		 *
-		 * L�ngd och tid
+		 * Längd och tid
 		 * 
 		 */
 		JLabel timeInvalidLabel = new JLabel("");
@@ -211,6 +228,7 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(speedInvalidLabel);
 
 		stillTimeTextField = new JTextField();
+		//När man slutar skriva i tidsrutan så kontrolleras det så att endast siffror finns där, annars kastas en exception som fångas och då skickar ett varningsmeddelande
 		stillTimeTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -230,7 +248,6 @@ public class STR_Calculator extends JFrame {
 
 		JPanel logPanel = new JPanel();
 		logPanel.setAutoscrolls(true);
-		// logScrollPane.setViewportView(logPanel);
 		logPanel.setPreferredSize(new Dimension(0, 10000));
 		logPanel.setLayout(null);
 
@@ -490,7 +507,12 @@ public class STR_Calculator extends JFrame {
 				}
 
 				double value = Double.parseDouble(speedTextField.getText());
+				if (value>299792458) {
+				    value = 299792458;
+				    speedTextField.setText(value + "");
+				}
 				speedSlider.setValue((int) value);
+				
 			}
 		});
 		speedTextField.setToolTipText("T.ex 290000000m/s");
@@ -746,8 +768,8 @@ public class STR_Calculator extends JFrame {
 				if (ev.getStateChange() == ItemEvent.SELECTED) {
 					reverseEverything = true;
 
-					timeTextArea.setText("t i år");
-					lengthTextArea.setText("l i meter");
+					timeTextArea.setText("t");
+					lengthTextArea.setText("l");
 					stillTimeTextField.setToolTipText("Tiden som har passerat på ett objekt i rörelse: \"5 år\"");
 					stillLengthTextField.setToolTipText(
 							"Längden på ett objektet så som den uppfattas av en stillastående observatör: \"30 m\"");
@@ -758,8 +780,8 @@ public class STR_Calculator extends JFrame {
 				} else if (ev.getStateChange() == ItemEvent.DESELECTED) {
 					reverseEverything = false;
 
-					timeTextArea.setText("t0 i år");
-					lengthTextArea.setText("l0 i meter");
+					timeTextArea.setText("t0");
+					lengthTextArea.setText("l0");
 					stillTimeTextField.setToolTipText("Tiden som har passerat på ett stillastående objekt: \"5 år\"");
 					stillLengthTextField.setToolTipText(
 							"Längden på ett stillastående objekt uppfattad ur objektets perspektiv: \"30 m\"");
@@ -809,8 +831,9 @@ public class STR_Calculator extends JFrame {
 		logLength0Label.setBounds(173, 0, 20, 25);
 		logPanel.add(logLength0Label);
 
-		JLabel logSpeedLabel = new JLabel("Objektets hastighet");
-		logSpeedLabel.setBounds(242, 0, 96, 25);
+		JLabel logSpeedLabel = new JLabel("v");
+		logSpeedLabel.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		logSpeedLabel.setBounds(282, 0, 20, 25);
 		logPanel.add(logSpeedLabel);
 
 		JLabel logTimeLabel = new JLabel("t");
@@ -822,8 +845,9 @@ public class STR_Calculator extends JFrame {
 		logLengthLabel.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		logLengthLabel.setBounds(502, 0, 7, 25);
 		logPanel.add(logLengthLabel);
-		JLabel gammaLabel = new JLabel("Gamma");
-		gammaLabel.setBounds(560, 0, 90, 25);
+		JLabel gammaLabel = new JLabel("γ");
+		gammaLabel.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		gammaLabel.setBounds(597, 0, 20, 25);
 		logPanel.add(gammaLabel);
 
 		JLabel logRevLabel = new JLabel("Rev?");
@@ -836,9 +860,9 @@ public class STR_Calculator extends JFrame {
 		convPanel.setLayout(null);
 
 		String[] timeConverterOptions = { "Nanosekunder", "Mikrosekunder", "Millisekunder", "Sekunder", "Minuter",
-				"Timmar", "Dagar", "År - grundenhet" };
+				"Timmar", "Dagar", "År" };
 		String[] speedConverterOptions = { "m/s - grundenhet", "km/s", "km/h" };
-		String[] lengthConverterOptions = { "Millimeter", "Centimeter", "Decimeter", "Meter - grundenhet",
+		String[] lengthConverterOptions = { "Millimeter", "Centimeter", "Decimeter", "Meter",
 				"Kilometer" };
 
 		JComboBox<String> entryTimeBox = new JComboBox<>();
@@ -968,7 +992,7 @@ public class STR_Calculator extends JFrame {
 							answerTimeTextField.setText(
 									(Double.parseDouble(entryTimeTextField.getText()) / 1000000000 / 3600 / 24) + "");
 							break;
-						case "År - grundenhet":
+						case "År":
 							answerTimeTextField.setText(
 									(Double.parseDouble(entryTimeTextField.getText()) / 1000000000 / 3600 / 24 / 365)
 											+ "");
@@ -1002,7 +1026,7 @@ public class STR_Calculator extends JFrame {
 							answerTimeTextField.setText(
 									(Double.parseDouble(entryTimeTextField.getText()) / 1000000 / 3600 / 24) + "");
 							break;
-						case "År - grundenhet":
+						case "År":
 							answerTimeTextField.setText(
 									(Double.parseDouble(entryTimeTextField.getText()) / 1000000 / 3600 / 24 / 365)
 											+ "");
@@ -1036,7 +1060,7 @@ public class STR_Calculator extends JFrame {
 							answerTimeTextField.setText(
 									(Double.parseDouble(entryTimeTextField.getText()) / 1000 / 3600 / 24) + "");
 							break;
-						case "År - grundenhet":
+						case "År":
 							answerTimeTextField.setText(
 									(Double.parseDouble(entryTimeTextField.getText()) / 1000 / 3600 / 24 / 365) + "");
 							break;
@@ -1068,7 +1092,7 @@ public class STR_Calculator extends JFrame {
 							answerTimeTextField
 									.setText((Double.parseDouble(entryTimeTextField.getText()) / 3600 / 24) + "");
 							break;
-						case "År - grundenhet":
+						case "År":
 							answerTimeTextField
 									.setText((Double.parseDouble(entryTimeTextField.getText()) / 3600 / 24 / 365) + "");
 							break;
@@ -1101,7 +1125,7 @@ public class STR_Calculator extends JFrame {
 							answerTimeTextField
 									.setText((Double.parseDouble(entryTimeTextField.getText()) / 60 / 24) + "");
 							break;
-						case "År - grundenhet":
+						case "År":
 							answerTimeTextField
 									.setText((Double.parseDouble(entryTimeTextField.getText()) / 60 / 24 / 365) + "");
 							break;
@@ -1133,7 +1157,7 @@ public class STR_Calculator extends JFrame {
 						case "Dagar":
 							answerTimeTextField.setText((Double.parseDouble(entryTimeTextField.getText()) / 24) + "");
 							break;
-						case "År - grundenhet":
+						case "År":
 							answerTimeTextField
 									.setText((Double.parseDouble(entryTimeTextField.getText()) / 24 / 365) + "");
 							break;
@@ -1167,12 +1191,12 @@ public class STR_Calculator extends JFrame {
 						case "Dagar":
 							warningTimeBoxLabel.setText("Välj olika värdetyper!");
 							break;
-						case "År - grundenhet":
+						case "År":
 							answerTimeTextField.setText((Double.parseDouble(entryTimeTextField.getText()) / 365) + "");
 							break;
 						}
 						break;
-					case "År - grundenhet":
+					case "År":
 						switch (converterAnswerTimeType) {
 						case "Nanosekunder":
 							answerTimeTextField.setText(
@@ -1203,7 +1227,7 @@ public class STR_Calculator extends JFrame {
 						case "Dagar":
 							answerTimeTextField.setText((Double.parseDouble(entryTimeTextField.getText()) * 365) + "");
 							break;
-						case "År - grundenhet":
+						case "År":
 							warningTimeBoxLabel.setText("Välj olika värdetyper!");
 							break;
 						}
@@ -1308,7 +1332,7 @@ public class STR_Calculator extends JFrame {
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) / 100) + "");
 							break;
-						case "Meter - grundenhet":
+						case "Meter":
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) / 1000) + "");
 							break;
@@ -1331,7 +1355,7 @@ public class STR_Calculator extends JFrame {
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) / 10) + "");
 							break;
-						case "Meter - grundenhet":
+						case "Meter":
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) / 100) + "");
 							break;
@@ -1354,7 +1378,7 @@ public class STR_Calculator extends JFrame {
 						case "Decimeter":
 							warningLengthBoxLabel.setText("Välj olika värdetyper!");
 							break;
-						case "Meter - grundenhet":
+						case "Meter":
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) / 10) + "");
 							break;
@@ -1364,7 +1388,7 @@ public class STR_Calculator extends JFrame {
 							break;
 						}
 						break;
-					case "Meter - grundenhet":
+					case "Meter":
 						switch (converterAnswerLengthType) {
 						case "Millimeter":
 							answerLengthTextField
@@ -1378,7 +1402,7 @@ public class STR_Calculator extends JFrame {
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) * 10) + "");
 							break;
-						case "Meter - grundenhet":
+						case "Meter":
 							warningLengthBoxLabel.setText("Välj olika värdetyper!");
 							break;
 						case "Kilometer":
@@ -1401,7 +1425,7 @@ public class STR_Calculator extends JFrame {
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) * 10000) + "");
 							break;
-						case "Meter - grundenhet":
+						case "Meter":
 							answerLengthTextField
 									.setText((Double.parseDouble(entryLengthTextField.getText()) * 1000) + "");
 							break;
