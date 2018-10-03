@@ -455,7 +455,7 @@ public class STR_Calculator extends JFrame {
 
 		JTextArea timeTextArea = new JTextArea();
 		timeTextArea.setEditable(false);
-		timeTextArea.setText("t0 i år");
+		timeTextArea.setText("t0");
 		timeTextArea.setOpaque(false);
 		timeTextArea.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
 		timeTextArea.setBounds(0, 15, 130, 22);
@@ -463,7 +463,7 @@ public class STR_Calculator extends JFrame {
 
 		JTextArea lengthTextArea = new JTextArea();
 		lengthTextArea.setEditable(false);
-		lengthTextArea.setText("l0 i meter");
+		lengthTextArea.setText("l0");
 		lengthTextArea.setOpaque(false);
 		lengthTextArea.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
 		lengthTextArea.setBounds(180, 15, 130, 26);
