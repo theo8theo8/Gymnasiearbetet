@@ -304,6 +304,7 @@ public class STR_Calculator extends JFrame {
 		JButton answerButton = new JButton("Räkna ut");
 		answerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				//Allt som görs när "räkna ut-knappen" trycks
 				setParameters();
 				solveGamma();
 				solveTime();
@@ -314,11 +315,14 @@ public class STR_Calculator extends JFrame {
 				showPics();
 				showPercent();
 			}
-
+			
+			//Plockar värdena från de olika rutorna där man för in värden och tilldelar dessa till en variabel
 			private void setParameters() {
+				//Om fältet är tomt så sätts värdet till 0
 				if (stillTimeTextField.getText().equals("")) {
 					tStill = 0;
 				} else {
+					//Annars så sätts värdet till en double av det värde som står i rutan
 					tStill = Double.parseDouble(stillTimeTextField.getText());
 				}
 				if (stillLengthTextField.getText().equals("")) {
@@ -331,47 +335,58 @@ public class STR_Calculator extends JFrame {
 				} else {
 					vms = Double.parseDouble(speedTextField.getText());
 				}
-
+				
+				//Omvandlar hastigheten i m/s till km/s
 				vkms = vms / 1000;
 
 			}
 
 			private void showTime() {
+				//Skriver ut svaret för tiden
 				timeAnswerTextField.setText(t + "");
 			}
 
 			private void showLength() {
+				//Skriver ut svaret för längden
 				lengthAnswerTextField.setText(l + "");
 			}
 
+			//Allt som har med tågbilderna att göra
 			private void showPics() {
+				//Sätter skalfaktorn till differensen av startvärdet och resultatet. Multiplicerar sedan detta med 325 som är storleken på bilden i x-led
 				double scaleFactor = (l / lStill) * 325;
 				if ((int) scaleFactor == 0) {
 					scaleFactor = 1;
 				}
+				//Initierar den övre bilden som ej ska ändras
 				ImageIcon originalImage = new ImageIcon(this.getClass().getResource("/trainPicture.png"));
+				//Skapar den skalade bilden genom att sätta in x-värdet som skalfaktorn och y-värdet är detsamma
 				Image newImage = originalImage.getImage().getScaledInstance((int) scaleFactor, 50, Image.SCALE_DEFAULT);
 				ImageIcon scaledImageIcon = new ImageIcon(newImage);
 				lineScalableImage.setIcon(scaledImageIcon);
+				//Skriver ut längden i två labels
 				maxLengthLabel.setText((int) lStill + "m");
 				maxFLengthLabel.setText((int) l + "m");
+				//En double som bestämmer placeringen av labeln hos den skalade bilden.
 				double labelPlacement = (l / lStill) * 265 + 354;
 				maxFLengthLabel.setBounds((int) labelPlacement, 324, 46, 14);
 			}
-
+			
+			//Visar det antal procent som den nya längden är av originalet
 			private void showPercent() {
+				//Antalet procent är en ganska enkel matematisk operation
 				double percentLengthChange = (l / lStill) * 100;
+				//För att kunna avrunda talet så omvandlas det till en bigdecimal
 				BigDecimal bd = new BigDecimal(percentLengthChange);
-				bd = bd.setScale(9, RoundingMode.HALF_UP);
+				//Sedan bestäms att talet ska ha maximum 11 decimaler då det är vad som får plats i rutan
+				bd = bd.setScale(11, RoundingMode.HALF_UP);
 				percentLengthChange = bd.doubleValue();
 				percentTextField.setText(percentLengthChange + "%");
 			}
 
-			/*
-			 * R�kna ut: l t gamma
-			 * 
-			 */
+			//Räknar ut längdkontraktionen
 			private void solveLength() {
+				//Om reverseknappen är intryct så görs beräkningen baklänges
 				if (reverseEverything) {
 					l = lStill * gamma;
 				} else {
@@ -380,7 +395,9 @@ public class STR_Calculator extends JFrame {
 
 			}
 
+			//Räknar ut tidsdilatationen
 			private void solveTime() {
+				//Om reverseknappen är intryct så görs beräkningen baklänges
 				if (reverseEverything) {
 					t = tStill * gamma;
 				} else {
@@ -389,10 +406,13 @@ public class STR_Calculator extends JFrame {
 
 			}
 
+			//Räknar ut gamma
 			private void solveGamma() {
+				//1 dividerat med (roten ur (1-(hastigheten i m/s upphöjt i två dividerar med c upphöjt i 2)));
 				gamma = (1 / (Math.sqrt(1 - (Math.pow(vkms, 2) / Math.pow(c, 2)))));
 			}
 
+			//Skriver in allting i loggen
 			private void logEverything() {
 				if (reverseEverything) {
 					textTime0Pane.setText(textTime0Pane.getText() + sep + t);
@@ -403,6 +423,7 @@ public class STR_Calculator extends JFrame {
 					textGammaPane.setText(textGammaPane.getText() + sep + gamma);
 					textRevPane.setText(textRevPane.getText() + sep + "JA");
 				} else {
+					//Tar det tidigare värdet + sep som skapar en ny linje och sedan det nya värdet
 					textTime0Pane.setText(textTime0Pane.getText() + sep + tStill);
 					textLength0Pane.setText(textLength0Pane.getText() + sep + lStill);
 					textSpeedPane.setText(textSpeedPane.getText() + sep + vms);
@@ -420,19 +441,21 @@ public class STR_Calculator extends JFrame {
 		stillLengthTextField = new JTextField();
 		stillLengthTextField.addKeyListener(new KeyAdapter() {
 			@Override
+			//Testar när man skriver in längden om det verkligen är en double
 			public void keyReleased(KeyEvent e) {
 				try {
+					//Om det är något annat än en double så kastats en exception
 					Double.parseDouble(stillLengthTextField.getText());
 					lengthInvalidLabel.setText("");
+					//Denna fångas upp här och skickar ett varningsmeddelande
 				} catch (NumberFormatException e1) {
 					lengthInvalidLabel.setText("Endast siffror och punkt");
-
+					
 				}
 			}
 		});
 
-		stillLengthTextField
-				.setToolTipText("Längden på ett stillastående objekt uppfattad ur objektets perspektiv: \"30 m\"");
+		stillLengthTextField.setToolTipText("Längden på ett stillastående objekt uppfattad ur objektets perspektiv: \"30 m\"");
 		stillLengthTextField.setColumns(10);
 		stillLengthTextField.setBounds(180, 42, 150, 31);
 		calcPanel.add(stillLengthTextField);
@@ -445,8 +468,7 @@ public class STR_Calculator extends JFrame {
 		calcPanel.add(timeAnswerTextField);
 
 		lengthAnswerTextField = new JTextField();
-		lengthAnswerTextField.setToolTipText(
-				"Den kontrakterade längden. Längden på objektet så som den uppfattas av en stillastående observatör");
+		lengthAnswerTextField.setToolTipText("Den kontrakterade längden. Längden på objektet så som den uppfattas av en stillastående observatör");
 		lengthAnswerTextField.setEditable(false);
 		lengthAnswerTextField.setColumns(10);
 		lengthAnswerTextField.setBounds(180, 305, 150, 52);
@@ -455,9 +477,12 @@ public class STR_Calculator extends JFrame {
 		JSlider speedSlider = new JSlider(0, 299792458, 149896229);
 		speedSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
+				//Testar när man ändrar slidern om det verkligen är en double
 				try {
+					//Om det är något annat än en double så kastats en exception
 					Double.parseDouble(speedTextField.getText());
 					speedInvalidLabel.setText("");
+					//Denna fångas upp här och skickar ett varningsmeddelande
 				} catch (NumberFormatException e1) {
 					speedInvalidLabel.setText("Endast siffror och punkt");
 
@@ -498,15 +523,18 @@ public class STR_Calculator extends JFrame {
 		speedTextField.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent ke) {
-
+				//Testar när man skriver in hastigheten om det verkligen är en double
 				try {
+					//Om det är något annat än en double så kastats en exception
 					Double.parseDouble(speedTextField.getText());
 					speedInvalidLabel.setText("");
+					//Denna fångas upp här och skickar ett varningsmeddelande
 				} catch (NumberFormatException e1) {
 					speedInvalidLabel.setText("Endast siffror och punkt");
 				}
 
 				double value = Double.parseDouble(speedTextField.getText());
+				//Kollar så att det man skrivit in inte är större än ljusets hastighet, isåfall sätts det till c
 				if (value>299792458) {
 				    value = 299792458;
 				    speedTextField.setText(value + "");
@@ -521,8 +549,11 @@ public class STR_Calculator extends JFrame {
 		speedTextField.setBounds(125, 156, 80, 25);
 		calcPanel.add(speedTextField);
 
+		//Skriver kommentarer endast på denna knapp. Alla andra beter sig likadant fast med andra värden såklart
 		JButton button_n1k = new JButton("-1k");
 		button_n1k.addActionListener(new ActionListener() {
+			
+			//Samma double-mekanism som kommenterats ett antal gånger redan
 			public void actionPerformed(ActionEvent arg0) {
 				try {
 					Double.parseDouble(speedTextField.getText());
@@ -531,6 +562,7 @@ public class STR_Calculator extends JFrame {
 					speedInvalidLabel.setText("Endast siffror och punkt");
 
 				}
+				//Kollar så att man inte råkar sänka värdet för hastigheten under 0, isåfall hoppar den tillbaka till 0
 				if ((Double.parseDouble(speedTextField.getText()) - 1000) < 0) {
 					speedTextField.setText("0");
 				} else {
@@ -762,9 +794,11 @@ public class STR_Calculator extends JFrame {
 		button_p1k.setBounds(205, 156, 25, 25);
 		calcPanel.add(button_p1k);
 
+		//Reverseringsknappen, det den i princip gör är att ändra massa tooltips+texter och sätta en boolean till true
 		JToggleButton reverseButton = new JToggleButton("Reversera");
 		reverseButton.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent ev) {
+				//Om knappen används och nu är MARKERAD så sker följande
 				if (ev.getStateChange() == ItemEvent.SELECTED) {
 					reverseEverything = true;
 
@@ -777,6 +811,8 @@ public class STR_Calculator extends JFrame {
 							"Den kontrakterade tiden. Tiden som har passerat på ett stillastående objekt");
 					lengthAnswerTextField.setToolTipText(
 							"Den dilataterade längden. Längden på ett stillastående objekt uppfattad ur objektets perspektiv");
+					//Om knappen används och nu EJ ÄR MARKERAD så händer följande
+					//Allt sätts tillbaka till det normala
 				} else if (ev.getStateChange() == ItemEvent.DESELECTED) {
 					reverseEverything = false;
 
@@ -859,6 +895,7 @@ public class STR_Calculator extends JFrame {
 		contentPane.add(convPanel, "conv");
 		convPanel.setLayout(null);
 
+		//Gör i ordning tre stycken arrays som kommer att användas i konverteraren, alla värden som ska användas
 		String[] timeConverterOptions = { "Nanosekunder", "Mikrosekunder", "Millisekunder", "Sekunder", "Minuter",
 				"Timmar", "Dagar", "År" };
 		String[] speedConverterOptions = { "m/s - grundenhet", "km/s", "km/h" };
@@ -952,24 +989,34 @@ public class STR_Calculator extends JFrame {
 		warningLengthBoxLabel.setBounds(515, 216, 150, 20);
 		convPanel.add(warningLengthBoxLabel);
 
+		//Går igenom endast en av konverterarna med kommentarer, de andra två fungerar likadant
 		JButton timeConverterButton = new JButton("Konvertera");
 		timeConverterButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//Tar bort varningsmeddelanden om sådana skulle finnas sedan förra konverteringen
 				warningTimeBoxLabel.setText("");
 
+				//Om entry-rutan är tom så sätts answer-rutan till tom och resten av koden hoppas över
 				if (entryTimeTextField.getText().equals("")) {
 					answerTimeTextField.setText("");
+					//Om så inte är fallet så händer följande
 				} else {
+					//De båda värdena som valts i menyerna omvandlas till strängar
 					converterEntryTimeType = entryTimeBox.getSelectedItem().toString();
 					converterAnswerTimeType = answerTimeBox.getSelectedItem().toString();
 
 					switch (converterEntryTimeType) {
+					//Ifall starttypen som valts är nanosekunder såå fortskrider programmet, annar kollas nästa startyp osv
 					case "Nanosekunder":
 						switch (converterAnswerTimeType) {
+						//Ifall svarstypen som valts är nanosekunder så händer följande, annars...
 						case "Nanosekunder":
+							//Om start- och svarstyperna är desamma så skickas ett varningsmeddelande
 							warningTimeBoxLabel.setText("Välj olika värdetyper!");
 							break;
+						//Ifall svarstypen är Mikrosekunder så:
 						case "Mikrosekunder":
+							//Sätts svarsfältet till det värde som bli när nanosekunder omvandlas till mikrosekunder.
 							answerTimeTextField.setText((Double.parseDouble(entryTimeTextField.getText()) / 1000) + "");
 							break;
 						case "Millisekunder":
