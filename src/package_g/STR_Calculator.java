@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JToggleButton;
@@ -28,6 +29,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Cursor;
@@ -42,6 +44,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import java.util.Locale;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 /*
  * STR_Calculator:
  * 
@@ -85,6 +90,11 @@ public class STR_Calculator extends JFrame {
 	String converterAnswerTimeType;
 	String converterEntryLengthType;
 	String converterAnswerLengthType;
+	
+	private int squareX = 50;
+	    private int squareY = 50;
+	    private int squareW = 20;
+	    private int squareH = 20;
 	
 	
 
@@ -167,11 +177,24 @@ public class STR_Calculator extends JFrame {
 		});
 		menuBar.add(convButton);
 		
+		JButton lorentzButton = new JButton("Lorentz");
+		lorentzButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				CardLayout c = (CardLayout) (contentPane.getLayout());
+				c.show(contentPane, "lorentz");
+			}
+		});
+		menuBar.add(lorentzButton);
+		
 		//Skapar en panel som är en grund för alla de andra panelerna
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new CardLayout(0, 0));
+		
+		JPanel lorentzPanel = new JPanel();
+		contentPane.add(lorentzPanel, "lorentz");
+		lorentzPanel.setLayout(null);
 
 		//Skapar kalkylatorpanelen där sedan ett antal komponenter kommer att adderas
 		JPanel calcPanel = new JPanel();
@@ -300,6 +323,9 @@ public class STR_Calculator extends JFrame {
 		percentTextField.setBounds(450, 359, 104, 20);
 		calcPanel.add(percentTextField);
 		percentTextField.setColumns(10);
+		
+		
+		
 
 		JButton answerButton = new JButton("Räkna ut");
 		answerButton.addActionListener(new ActionListener() {
@@ -1487,6 +1513,51 @@ public class STR_Calculator extends JFrame {
 		});
 		lengthConverterButton.setBounds(200, 216, 115, 20);
 		convPanel.add(lengthConverterButton);
+		
+		
+		 
 
+		
+		
+		JPanel panel = new JPanel();
+		        int OFFSET = 1;
+		       
+		panel.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			    if ((squareX!=e.getX()) || (squareY!=e.getY())) {
+			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
+			            squareX=e.getX();
+			            squareY=e.getY();
+			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
+	    }  
+			}
+		});
+		panel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+			    if ((squareX!=e.getX()) || (squareY!=e.getY())) {
+			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
+			            squareX=e.getX();
+			            squareY=e.getY();
+			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
+			        } 
+			}
+		});
+		panel.setBounds(0, 107, 337, 337);
+		lorentzPanel.add(panel);
+		
+		
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBounds(338, 107, 337, 337);
+		lorentzPanel.add(panel_1);
+		
+	    
+	    
 	}
+	    
+	
+	
+	
 }
