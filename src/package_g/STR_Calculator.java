@@ -48,6 +48,7 @@ import java.util.Locale;
 
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.JCheckBox;
 
 /*
  * STR_Calculator:
@@ -64,6 +65,7 @@ public class STR_Calculator extends JFrame implements Runnable {
 	private JTextField timeAnswerTextField;
 	private JTextField lengthAnswerTextField;
 	private JTextField speedTextField;
+	private JTextField gammaTextField;
 
 	String sep = System.getProperty("line.separator");
 
@@ -104,7 +106,8 @@ public class STR_Calculator extends JFrame implements Runnable {
 	    boolean ring1 = false;
 	    boolean ring2 = false;
 	    int fps = 30;
-	
+	   
+	boolean useGamma = false;
 	
 
 	public static void main(String[] args) {
@@ -119,6 +122,7 @@ public class STR_Calculator extends JFrame implements Runnable {
 					STR_Calculator frame = new STR_Calculator();
 					//Gör så att programmet syns
 					frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -130,6 +134,8 @@ public class STR_Calculator extends JFrame implements Runnable {
 	 * Här skapas framen/programmet
 	 */
 	public STR_Calculator() {
+		
+		
 	    
 	    	//Sätter ikonen för programmet, en tecknad bild på Einstein
 		setIconImage(new ImageIcon(this.getClass().getResource("/icon_Einstein.jpg")).getImage());
@@ -339,7 +345,26 @@ public class STR_Calculator extends JFrame implements Runnable {
 		calcPanel.add(percentTextField);
 		percentTextField.setColumns(10);
 		
-		
+		JSlider speedSlider = new JSlider(0, 299792458, 149896229);
+		speedSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				//Testar när man ändrar slidern om det verkligen är en double
+				try {
+					//Om det är något annat än en double så kastats en exception
+					Double.parseDouble(speedTextField.getText());
+					speedInvalidLabel.setText("");
+					//Denna fångas upp här och skickar ett varningsmeddelande
+				} catch (NumberFormatException e1) {
+					speedInvalidLabel.setText("Endast siffror och punkt");
+
+				}
+				speedTextField.setText(String.valueOf(speedSlider.getValue()));
+			}
+		});
+		speedSlider.setValue(149896229);
+		speedSlider.setMaximum(299792458);
+		speedSlider.setBounds(0, 119, 330, 26);
+		calcPanel.add(speedSlider);
 		
 
 		JButton answerButton = new JButton("Räkna ut");
@@ -355,6 +380,7 @@ public class STR_Calculator extends JFrame implements Runnable {
 				logEverything();
 				showPics();
 				showPercent();
+				showGamma();
 			}
 			
 			//Plockar värdena från de olika rutorna där man för in värden och tilldelar dessa till en variabel
@@ -380,6 +406,12 @@ public class STR_Calculator extends JFrame implements Runnable {
 				//Omvandlar hastigheten i m/s till km/s
 				vkms = vms / 1000;
 
+			}
+			
+			private void showGamma() {
+				if(!useGamma) {
+					gammaTextField.setText(gamma + "");
+				}
 			}
 
 			private void showTime() {
@@ -449,8 +481,17 @@ public class STR_Calculator extends JFrame implements Runnable {
 
 			//Räknar ut gamma
 			private void solveGamma() {
+				if(useGamma) {
+					gamma = Double.parseDouble(gammaTextField.getText());
+					vkms = (Math.sqrt((Math.pow(gamma, 2)-1)/Math.pow(gamma, 2)))*c;
+					speedSlider.setValue((int)vkms*1000);
+					
+					
+					speedTextField.setText((int)vkms*1000 + "");
+	 			} else {
 				//1 dividerat med (roten ur (1-(hastigheten i m/s upphöjt i två dividerar med c upphöjt i 2)));
 				gamma = (1 / (Math.sqrt(1 - (Math.pow(vkms, 2) / Math.pow(c, 2)))));
+				}
 			}
 
 			//Skriver in allting i loggen
@@ -515,26 +556,7 @@ public class STR_Calculator extends JFrame implements Runnable {
 		lengthAnswerTextField.setBounds(180, 305, 150, 52);
 		calcPanel.add(lengthAnswerTextField);
 
-		JSlider speedSlider = new JSlider(0, 299792458, 149896229);
-		speedSlider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				//Testar när man ändrar slidern om det verkligen är en double
-				try {
-					//Om det är något annat än en double så kastats en exception
-					Double.parseDouble(speedTextField.getText());
-					speedInvalidLabel.setText("");
-					//Denna fångas upp här och skickar ett varningsmeddelande
-				} catch (NumberFormatException e1) {
-					speedInvalidLabel.setText("Endast siffror och punkt");
-
-				}
-				speedTextField.setText(String.valueOf(speedSlider.getValue()));
-			}
-		});
-		speedSlider.setValue(149896229);
-		speedSlider.setMaximum(299792458);
-		speedSlider.setBounds(0, 119, 330, 26);
-		calcPanel.add(speedSlider);
+		
 
 		JTextArea timeTextArea = new JTextArea();
 		timeTextArea.setEditable(false);
@@ -871,6 +893,51 @@ public class STR_Calculator extends JFrame implements Runnable {
 		});
 		reverseButton.setBounds(444, 46, 121, 23);
 		calcPanel.add(reverseButton);
+		
+		JLabel lblGammafaktor = new JLabel("Gamma-faktor");
+		lblGammafaktor.setFont(new Font("Gill Sans MT", Font.PLAIN, 15));
+		lblGammafaktor.setBounds(122, 370, 86, 14);
+		calcPanel.add(lblGammafaktor);
+		
+		JLabel gammaInvalidLabel = new JLabel("");
+		gammaInvalidLabel.setForeground(Color.RED);
+		gammaInvalidLabel.setBounds(97, 416, 130, 14);
+		calcPanel.add(gammaInvalidLabel);
+		
+		gammaTextField = new JTextField();
+		gammaTextField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					Double.parseDouble(gammaTextField.getText());
+					gammaInvalidLabel.setText("");
+				} catch (NumberFormatException e1) {
+					gammaInvalidLabel.setText("Endast siffror och punkt");
+				}
+			}
+		});
+		gammaTextField.setToolTipText("Gammafaktorn");
+		gammaTextField.setColumns(10);
+		gammaTextField.setBounds(87, 386, 150, 31);
+		calcPanel.add(gammaTextField);
+		
+		JCheckBox gammaCheckBox = new JCheckBox("Använd för beräkning");
+		gammaCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (useGamma) {
+					useGamma=false;
+					} else {
+						useGamma=true;
+						}
+			}
+		});
+		gammaCheckBox.setBounds(243, 390, 130, 23);
+		calcPanel.add(gammaCheckBox);
+		
+		
+		
+		CardLayout cl = (CardLayout) (contentPane.getLayout());
+		cl.show(contentPane, "calc");
 
 		NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
 		DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
@@ -1537,7 +1604,6 @@ public class STR_Calculator extends JFrame implements Runnable {
 		JPanel panelLeft = new panelLeft();
 		panelLeft.setBorder(new LineBorder(Color.BLACK, 3));
 		panelLeft.setBounds(0, 115, 337, 337);
-		//panelLeft.setBackground(Color.BLACK);
 		panelLeft.repaint();
 		lorentzPanel.add(panelLeft);
 		
@@ -1545,7 +1611,6 @@ public class STR_Calculator extends JFrame implements Runnable {
 		
 		JPanel panelRight = new panelRight();
 		panelRight.setBorder(new LineBorder(Color.BLACK, 3));
-		//panelRight.setBackground(Color.BLACK);
 		panelRight.setBounds(338, 115, 337, 337);		
 		panelRight.repaint();
 		lorentzPanel.add(panelRight);
