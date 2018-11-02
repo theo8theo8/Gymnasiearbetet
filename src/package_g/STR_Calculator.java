@@ -16,17 +16,20 @@ import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.JComboBox;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JToggleButton;
+import javax.swing.border.LineBorder;
 
-import java.awt.EventQueue;
-import java.awt.CardLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.awt.image.BufferedImage;
+import java.awt.EventQueue;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -34,8 +37,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -44,16 +45,17 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import java.util.Locale;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+
+import java.io.IOException;
+import javax.imageio.ImageIO;
+
 /*
  * STR_Calculator:
  * 
  * 
  * 
  */
-public class STR_Calculator extends JFrame {
+public class STR_Calculator extends JFrame implements Runnable {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -91,14 +93,23 @@ public class STR_Calculator extends JFrame {
 	String converterEntryLengthType;
 	String converterAnswerLengthType;
 	
-	private int squareX = 50;
-	    private int squareY = 50;
-	    private int squareW = 20;
-	    private int squareH = 20;
+	  int xNumber = -160;
+	    int xNumber2 = 337;
+	    int delay;
+	    Thread animatorThread;
+	    int radius = 1;
+	    int radius1 = 1;
+	    int radius2 = 1;
+	    boolean rings = false;
+	    boolean ring1 = false;
+	    boolean ring2 = false;
+	    int fps = 30;
 	
 	
 
 	public static void main(String[] args) {
+        
+        
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -138,6 +149,7 @@ public class STR_Calculator extends JFrame {
 		//En actionlistener så att det som syns i framen ändras till kalylatorpanelen när man trycker
 		calcButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				stopAnimation();
 				CardLayout c = (CardLayout) (contentPane.getLayout());
 				c.show(contentPane, "calc");
 			}
@@ -149,6 +161,7 @@ public class STR_Calculator extends JFrame {
 		//En actionlistener så att det som syns i framen ändras till infopanelen när man trycker
 		infoButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				stopAnimation();
 				CardLayout c = (CardLayout) (contentPane.getLayout());
 				c.show(contentPane, "info");
 			}
@@ -160,6 +173,7 @@ public class STR_Calculator extends JFrame {
 		//En actionlistener så att det som syns i framen ändras till loggpanelen när man trycker
 		logButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				stopAnimation();
 				CardLayout c = (CardLayout) (contentPane.getLayout());
 				c.show(contentPane, "logScroll");
 			}
@@ -171,6 +185,7 @@ public class STR_Calculator extends JFrame {
 		//En actionlistener så att det som syns i framen ändras till konverterarpanelen när man trycker
 		convButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				stopAnimation();
 				CardLayout c = (CardLayout) (contentPane.getLayout());
 				c.show(contentPane, "conv");
 			}
@@ -1519,45 +1534,206 @@ public class STR_Calculator extends JFrame {
 
 		
 		
-		JPanel panel = new JPanel();
-		        int OFFSET = 1;
-		       
-		panel.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-			    if ((squareX!=e.getX()) || (squareY!=e.getY())) {
-			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
-			            squareX=e.getX();
-			            squareY=e.getY();
-			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
-	    }  
+		JPanel panelLeft = new panelLeft();
+		panelLeft.setBorder(new LineBorder(Color.BLACK, 3));
+		panelLeft.setBounds(0, 115, 337, 337);
+		//panelLeft.setBackground(Color.BLACK);
+		panelLeft.repaint();
+		lorentzPanel.add(panelLeft);
+		
+		
+		
+		JPanel panelRight = new panelRight();
+		panelRight.setBorder(new LineBorder(Color.BLACK, 3));
+		//panelRight.setBackground(Color.BLACK);
+		panelRight.setBounds(338, 115, 337, 337);		
+		panelRight.repaint();
+		lorentzPanel.add(panelRight);
+		
+		JLabel lblHurDetSer = new JLabel("Hur det ser ut från tågets perspektiv");
+		lblHurDetSer.setBounds(28, 95, 177, 14);
+		lorentzPanel.add(lblHurDetSer);
+		
+		JLabel lblHurDetSer_1 = new JLabel("Hur det ser ut från en person/ladans perspektiv");
+		lblHurDetSer_1.setBounds(380, 95, 271, 14);
+		lorentzPanel.add(lblHurDetSer_1);
+		
+		JSlider fpsSlider = new JSlider();
+		fpsSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				fps = fpsSlider.getValue();
 			}
 		});
-		panel.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-			    if ((squareX!=e.getX()) || (squareY!=e.getY())) {
-			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
-			            squareX=e.getX();
-			            squareY=e.getY();
-			            repaint(squareX,squareY,squareW+OFFSET,squareH+OFFSET);
-			        } 
+		fpsSlider.setMaximum(60);
+		fpsSlider.setValue(30);
+		fpsSlider.setBounds(237, 10, 200, 26);
+		lorentzPanel.add(fpsSlider);
+		
+		JButton btnSpela = new JButton("Spela");
+		btnSpela.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				startAnimation();
+				
 			}
 		});
-		panel.setBounds(0, 107, 337, 337);
-		lorentzPanel.add(panel);
+		btnSpela.setBounds(138, 10, 89, 26);
+		lorentzPanel.add(btnSpela);
 		
+		JButton btnStoppa = new JButton("Stoppa");
+		btnStoppa.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				stopAnimation();
+				fps = 30;
+				fpsSlider.setValue(fps);
+			}
+		});
+		btnStoppa.setBounds(447, 10, 89, 26);
+		lorentzPanel.add(btnStoppa);
 		
-		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBounds(338, 107, 337, 337);
-		lorentzPanel.add(panel_1);
-		
-	    
-	    
 	}
+	public class panelLeft extends JPanel{
+		private static final long serialVersionUID = 1L;
+		BufferedImage topTrain160;
+		BufferedImage barnSide160;
+		BufferedImage barnSide160R;
+		BufferedImage railway;
+		
+		public panelLeft() {
+			
+			try {
+				topTrain160 = ImageIO.read(getClass().getResourceAsStream("/toptrainpicture160.png"));
+				barnSide160 = ImageIO.read(getClass().getResourceAsStream("/barnSide160.png"));
+				barnSide160R = ImageIO.read(getClass().getResourceAsStream("/barnSide160R.png"));
+				railway = ImageIO.read(getClass().getResourceAsStream("/railway.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+	        protected void paintComponent(Graphics g) {
+	        	super.paintComponent(g);
+	        	g.drawImage(railway, 0, 0, null);
+	            g.drawImage(barnSide160 ,88 , 133, null);
+	            g.drawImage(barnSide160R ,88 , 188, null);
+	            g.drawImage(topTrain160 ,xNumber , 158, null);
+	            
+	            if (xNumber >= 88) {
+	            	rings = true;
+	            }
+	            
+	            if (rings == true) {
+	            	g.setColor(Color.BLACK);
+	            	g.drawOval(88-(radius/2), 168-(radius/2), radius, radius);
+	            	g.drawOval(248-(radius/2), 168-(radius/2), radius, radius);
+	            	if (radius>300) {
+	            		radius = 1;
+	            		rings = false;
+	            	}
+	            }
+	        }
+	    }	
+	
+	public class panelRight extends JPanel{
+		private static final long serialVersionUID = 1L;
+		BufferedImage topTrain240;
+		BufferedImage barnSide107;
+		BufferedImage barnSide107R;
+		BufferedImage railway;
+		
+		public panelRight() {
+			try {
+				topTrain240 = ImageIO.read(getClass().getResourceAsStream("/toptrainpicture240.png"));
+				barnSide107 = ImageIO.read(getClass().getResourceAsStream("/barnSide107.png"));
+				barnSide107R = ImageIO.read(getClass().getResourceAsStream("/barnSide107R.png"));
+				railway = ImageIO.read(getClass().getResourceAsStream("/railway.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		@Override
+	        protected void paintComponent(Graphics g) {
+	        	super.paintComponent(g);  
+	        	g.drawImage(railway, 0, 0, null);
+	            g.drawImage(topTrain240 ,48, 158, null);
+	            g.drawImage(barnSide107 ,xNumber2 , 133, null);
+	            g.drawImage(barnSide107R ,xNumber2 , 188, null);
+	            
+	            if (xNumber2 <= 181) {
+	            	ring1 = true;
+	            }
+	            
+	            if (xNumber2 <= 48) {
+	            	ring2 = true;
+	            }
+	            
+	            if (ring1 == true) {
+	            	g.setColor(Color.BLACK);
+	            	g.drawOval(288-(radius1/2), 168-(radius1/2), radius1, radius1);
+	            	if (radius1>400) {
+	            		radius1 = 1;
+	            		ring1 = false;
+	            	}
+	            }
+	            
+	            if (ring2 == true) {
+	            	g.setColor(Color.BLACK);
+	            	g.drawOval(48-(radius2/2), 168-(radius2/2), radius2, radius2);
+	            	if (radius2>400) {
+	            		radius2 = 1;
+	            		ring2 = false;
+	            	}
+	            }
+		}}
+		public void startAnimation() {
+	            if (animatorThread == null) {
+	                animatorThread = new Thread(this);
+	            }
+	            animatorThread.start();
+	        }
 	    
-	
-	
-	
+
+	    public void stopAnimation() {
+	        animatorThread = null;
+	    }
+
+		@Override
+		public void run() {
+	        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+	        long startTime = System.currentTimeMillis();
+	        delay = (fps > 0) ? (1000 / fps) : 100;
+	        while (Thread.currentThread() == animatorThread) {
+	            if (xNumber > 337) {
+	    	xNumber = -160;
+	    }
+	            xNumber=xNumber+4;
+	            
+	            if (xNumber2 < -107) {
+	            	xNumber2 = 337;
+	            }
+	            xNumber2 = xNumber2-4;
+	            
+	            if (rings == true) {
+	            	radius = radius + 4;
+	            }
+	            
+	            if (ring1 == true) {
+	            	radius1 = radius1 + 4;
+	            }
+	            
+	            if (ring2 == true) {
+	            	radius2 = radius2 + 4;
+	            }
+	            
+	            repaint();
+	            try {
+	                startTime += delay;
+	                Thread.sleep(Math.max(0, 
+	                                      startTime-System.currentTimeMillis()));
+	            } catch (InterruptedException e) {
+	                break;
+	            }
+	        }
+	    }
 }
